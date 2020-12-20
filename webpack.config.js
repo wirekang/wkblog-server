@@ -6,19 +6,19 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
+  target:"node",
   mode,
-  entry: {
-    app: path.join(__dirname, 'src', 'index.ts'),
-  },
+  entry: path.join(__dirname, 'src', 'index.ts'),
   output: {
-    filename: '[name].js',
+    filename: 'bundle.js',
     path: path.join(__dirname, 'dist'),
   },
   resolve: {
     extensions: ['.js','.ts'],
     modules:[
       path.join(__dirname,"src"),
-    ]
+      'node_modules',
+    ],
   },
   module: {
     rules: [
