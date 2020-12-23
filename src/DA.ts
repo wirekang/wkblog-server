@@ -101,13 +101,15 @@ export default class DA {
 
   async updatePost(id:number, post:Post): Promise<void> {
     const oldPost = await this.readPost(id);
-    const newPost = Object.assign(oldPost, post) as IPost;
-    if (!oldPost.published && post.published) {
-      newPost.publishedAt = Date.now();
-    }
-    newPost.updatedAt = Date.now();
 
-    const result = await this.posts.updateOne({ _id: id }, newPost);
+    const result = await this.posts.updateOne({ _id: id }, {
+      $set: {
+        ...post,
+        updatedAt: Date.now(),
+        publishedAt:
+        !oldPost.published && post.published ? Date.now() : oldPost.publishedAt,
+      },
+    });
     if (result.result.ok !== 1) {
       throw new Error(`The update has failed. result=${result}`);
     }
