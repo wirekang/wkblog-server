@@ -66,18 +66,12 @@ export default class DA {
     });
   }
 
-  async connect(): Promise<boolean> {
-    try {
-      await this.client.connect();
-      this.log('OK');
-      this.db = this.client.db(Ignore.db.database);
-      this.counters = this.db.collection<ICounter>('counters');
-      this.posts = this.db.collection<IPost>('posts');
-      return true;
-    } catch (err) {
-      this.log(err);
-      return false;
-    }
+  async connect(): Promise<void> {
+    await this.client.connect();
+    this.log('OK');
+    this.db = this.client.db(Ignore.db.database);
+    this.counters = this.db.collection<ICounter>('counters');
+    this.posts = this.db.collection<IPost>('posts');
   }
 
   async disconnect(): Promise<void> {
@@ -97,38 +91,46 @@ export default class DA {
     return result.insertedId;
   }
 
-  async readPost(id:number): Promise<IPost|null> {
+  async readPost(id:number): Promise<IPost> {
     const post = await this.posts.findOne({ _id: id });
+    if (!post) {
+      throw new Error(`There's no post with id ${id}.`);
+    }
     return post;
   }
 
-  async updatePost(id:number, post:Post): Promise<boolean> {
+  async updatePost(id:number, post:Post): Promise<void> {
     const oldPost = await this.readPost(id);
-    if (oldPost === null) {
-      return false;
-    }
     const newPost = Object.assign(oldPost, post) as IPost;
     if (!oldPost.published && post.published) {
       newPost.publishedAt = Date.now();
     }
     newPost.updatedAt = Date.now();
 
-    return (await this.posts.updateOne({ _id: id }, newPost)).result.ok === 1;
+    const result = await this.posts.updateOne({ _id: id }, newPost);
+    if (result.result.ok !== 1) {
+      throw new Error(`The update has failed. result=${result}`);
+    }
   }
 
-  async deletePost(id:number): Promise<boolean> {
+  async deletePost(id:number): Promise<void> {
     const result = await this.posts.deleteOne({ _id: id });
-    return result.result.ok === 1 && result.deletedCount === 1;
+    if (result.result.ok !== 1 || result.deletedCount !== 1) {
+      throw new Error(`The result is not as expected. result=${result}`);
+    }
   }
 
   async getNextID(name: string):Promise<number> {
-    const p = await this.counters.findOneAndUpdate({
+    const result = await this.counters.findOneAndUpdate({
       _id: name,
     }, {
       $inc: { next: 1 },
     }, {
       upsert: true,
     });
-    return p.value?.next || 0;
+    if (!result.value) {
+      throw new Error(`The result is not as expeted. result=${result}`);
+    }
+    return result.value.next;
   }
 }
