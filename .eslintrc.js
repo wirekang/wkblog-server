@@ -17,5 +17,7 @@ module.exports = {
   rules: {
     'no-console': 0,
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'no-use-before-define': 0,
+    '@typescript-eslint/no-use-before-define': ['error'],
   },
 };
