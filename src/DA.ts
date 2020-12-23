@@ -45,6 +45,8 @@ function createEmptyIPost():IPost {
 export default class DA {
   private log;
 
+  private client!: mongodb.MongoClient;
+
   private db!:mongodb.Db;
 
   private counters!: mongodb.Collection<ICounter>;
@@ -54,27 +56,35 @@ export default class DA {
   constructor() {
     this.log = makeLog('DB');
     const uri = `mongodb://${Ignore.db.host}:${Ignore.db.port}/${Ignore.db.database}`;
-    new mongodb.MongoClient(uri, {
+    this.client = new mongodb.MongoClient(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       auth: {
         user: Ignore.db.user,
         password: Ignore.db.password,
       },
-    }).connect((err, client) => {
-      if (err !== null) {
-        this.log(err.message);
-        process.exit(1);
-      } else {
-        this.log('OK');
-        this.db = client.db(Ignore.db.database);
-        this.counters = this.db.collection<ICounter>('counters');
-        this.posts = this.db.collection<IPost>('posts');
-      }
     });
   }
 
-  async createPost(p:Post):Promise<boolean> {
+  async connect(): Promise<boolean> {
+    try {
+      await this.client.connect();
+      this.log('OK');
+      this.db = this.client.db(Ignore.db.database);
+      this.counters = this.db.collection<ICounter>('counters');
+      this.posts = this.db.collection<IPost>('posts');
+      return true;
+    } catch (err) {
+      this.log(err);
+      return false;
+    }
+  }
+
+  async disconnect(): Promise<void> {
+    await this.client.close();
+  }
+
+  async createPost(p:Post):Promise<number> {
     const post = Object.assign(createEmptyIPost(), p) as IPost;
     post._id = await this.getNextID('post');
     post.createdAt = Date.now();
@@ -83,7 +93,8 @@ export default class DA {
       post.publishedAt = post.createdAt;
     }
 
-    return (await this.posts.insertOne(post)).result.ok === 1;
+    const result = await this.posts.insertOne(post);
+    return result.insertedId;
   }
 
   async readPost(id:number): Promise<IPost|null> {
