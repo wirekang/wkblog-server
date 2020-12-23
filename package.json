@@ -4,6 +4,7 @@
   "description": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^26.0.19",
     "@types/mongodb": "^3.6.3",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
@@ -12,17 +13,35 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-import": "^2.22.1",
+    "jest": "^26.6.3",
     "nodemon": "^2.0.6",
+    "ts-jest": "^26.4.4",
     "ts-loader": "^8.0.12",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
     "webpack": "^5.11.0",
     "webpack-cli": "^4.2.0"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "\\.test\\.ts$",
+    "moduleFileExtensions": [
+      "ts","js"
+    ],
+    "moduleDirectories": ["node_modules","src"],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": true
+      }
+    }
+  },
   "scripts": {
     "start": "NODE_PATH=./src node -r ts-node/register src/index.ts",
     "debug": "NODE_PATH=./src nodemon --watch src --exec node -r ts-node/register --inspect src/index.ts ",
-    "build": "NODE_ENV=production npx webpack --mode production --progress"
+    "build": "NODE_ENV=production npx webpack --mode production --progress",
+    "test": "jest ./src"
   },
   "dependencies": {
     "express": "^4.17.1",
