@@ -1,6 +1,6 @@
 import mongodb from 'mongodb';
 import Ignore from 'Ignore';
-import makeLog from 'makeLog';
+import utils from 'utils';
 
 interface IComment {
   name: string,
@@ -54,7 +54,7 @@ export default class DA {
   private posts!:mongodb.Collection<IPost>;
 
   constructor() {
-    this.log = makeLog('DB');
+    this.log = utils.makeLog('DB');
     const uri = `mongodb://${Ignore.db.host}:${Ignore.db.port}/${Ignore.db.database}`;
     this.client = new mongodb.MongoClient(uri, {
       useNewUrlParser: true,
