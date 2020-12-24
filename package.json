@@ -28,9 +28,13 @@
     },
     "testRegex": "\\.test\\.ts$",
     "moduleFileExtensions": [
-      "ts","js"
+      "ts",
+      "js"
     ],
-    "moduleDirectories": ["node_modules","src"],
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
     "globals": {
       "ts-jest": {
         "diagnostics": true
