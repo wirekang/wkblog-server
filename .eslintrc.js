@@ -23,5 +23,7 @@ module.exports = {
       functions: false,
       classes: false,
     }],
+    'no-shadow': 0,
+    '@typescript-eslint/no-shadow': 1,
   },
 };
