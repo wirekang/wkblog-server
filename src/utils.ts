@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import Ignore from 'Ignore';
 
 export default {
 
