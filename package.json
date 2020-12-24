@@ -38,8 +38,8 @@
     }
   },
   "scripts": {
-    "start": "NODE_PATH=./src node -r ts-node/register src/index.ts",
-    "debug": "NODE_PATH=./src nodemon --watch src --exec node -r ts-node/register --inspect src/index.ts ",
+    "start": "NODE_PATH=./src node -r ts-node/register src/index.ts ./example",
+    "debug": "NODE_PATH=./src nodemon --watch src --exec node -r ts-node/register --inspect src/index.ts ./example",
     "build": "NODE_ENV=production npx webpack --mode production --progress",
     "test": "jest ./src"
   },
