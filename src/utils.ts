@@ -10,8 +10,4 @@ export default {
   getHash(str:string): string {
     return crypto.createHash('sha1').update(str).digest('hex');
   },
-
-  getSHash(str:string): string {
-    return crypto.createHmac('sha256', Ignore.secret).update(str).digest('hex');
-  },
 };
