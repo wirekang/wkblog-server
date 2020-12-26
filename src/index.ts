@@ -59,16 +59,19 @@ async function countDown(n:number):Promise<void> {
   const it = new Interactive();
   it.getFileList = () => (service.mds);
   it.select = async (action, file) => {
-    console.log(file);
-    if (action === 'create') {
-      await service.create(file);
+    try {
+      if (action === 'create') {
+        await service.create(file);
+      }
+      if (action === 'update') {
+        await service.update(file);
+      }
+      if (action === 'publish') {
+        await service.publish(file);
+      }
+    } catch (e) {
+      console.log(e.message);
+      await countDown(DELAY_ACTION);
     }
-    if (action === 'update') {
-      await service.update(file);
-    }
-    if (action === 'publish') {
-      await service.publish(file);
-    }
-    await countDown(DELAY_ACTION);
   };
 })();
