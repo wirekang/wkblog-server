@@ -2,7 +2,6 @@ import Config from 'Config';
 import Service from 'Service';
 import readline from 'readline';
 import path from 'path';
-import utils from 'utils';
 import Interactive from 'Interactive';
 
 const DELAY_FIRST = 4;
