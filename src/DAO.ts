@@ -127,7 +127,7 @@ export default class DAO {
 
   async deletePost(id: string): Promise<void> {
     const res = await this.posts.deleteOne({ _id: id });
-    if (res.deletedCount === 0) {
+    if (res.result.ok === 0 || res.deletedCount === 0) {
       throw new Error(`result: ${res}`);
     }
   }
