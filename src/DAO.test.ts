@@ -1,8 +1,12 @@
 import DAO from 'DAO';
 import crypto from 'crypto';
+import path from 'path';
+import Config from 'Config';
 
 describe('CRUD', () => {
+  Config.parse(path.join(process.cwd(), 'example'));
   const da = new DAO();
+
   test('Connect', async () => {
     await da.connect();
   });
@@ -32,7 +36,7 @@ describe('CRUD', () => {
   });
 
   test('Wait', async () => {
-    await new Promise<void>((r) => { setTimeout(() => (r()), maxTimeGap + 500); });
+    await new Promise<void>((r) => { setTimeout(() => (r()), maxTimeGap + 100); });
   });
 
   test('Update', async () => {
@@ -44,7 +48,43 @@ describe('CRUD', () => {
     expect(read.title).toBe(newPost.title);
     expect(read.tags).toEqual(newPost.tags);
     expect(read.html).toBe(newPost.html);
+    expect(Date.now() - read.createdAt).toBeGreaterThan(maxTimeGap);
     expect(Date.now() - read.updatedAt).toBeLessThan(maxTimeGap);
+  });
+
+  test('Wait', async () => {
+    await new Promise<void>((r) => { setTimeout(() => (r()), maxTimeGap + 100); });
+  });
+
+  test('Publish', async () => {
+    const newPost = createPost();
+    await da.publishPost(newPost);
+
+    const read = await da.readPost(newPost._id);
+
+    expect(read.title).toBe(newPost.title);
+    expect(read.tags).toEqual(newPost.tags);
+    expect(read.html).toBe(newPost.html);
+    expect(Date.now() - read.createdAt).toBeGreaterThan(maxTimeGap);
+    expect(read.published).toBe(true);
+    expect(Date.now() - read.publishedAt).toBeLessThan(maxTimeGap);
+  });
+
+  test('Wait', async () => {
+    await new Promise<void>((r) => { setTimeout(() => (r()), maxTimeGap + 100); });
+  });
+
+  test('Withdraw', async () => {
+    const newPost = createPost();
+    await da.withDrawPost(newPost);
+
+    const read = await da.readPost(newPost._id);
+
+    expect(read.title).toBe(newPost.title);
+    expect(read.tags).toEqual(newPost.tags);
+    expect(read.html).toBe(newPost.html);
+    expect(read.published).toBe(false);
+    expect(Date.now() - read.createdAt).toBeGreaterThan(maxTimeGap);
   });
 
   test('Delete', async () => {

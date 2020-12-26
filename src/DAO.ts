@@ -106,6 +106,31 @@ export default class DAO {
     }
   }
 
+  async publishPost(post: Post): Promise<void> {
+    const oldPostSchema = await this.readPost(post._id);
+    const newPostSchema = Object.assign(oldPostSchema, post);
+    newPostSchema.publishedAt = Date.now();
+    newPostSchema.published = true;
+    const res = await this.posts.updateOne({ _id: newPostSchema._id }, {
+      $set: newPostSchema,
+    });
+    if (res.result.nModified === 0) {
+      throw new Error(`result: ${res}`);
+    }
+  }
+
+  async withDrawPost(post: Post): Promise<void> {
+    const oldPostSchema = await this.readPost(post._id);
+    const newPostSchema = Object.assign(oldPostSchema, post);
+    newPostSchema.published = false;
+    const res = await this.posts.updateOne({ _id: newPostSchema._id }, {
+      $set: newPostSchema,
+    });
+    if (res.result.nModified === 0) {
+      throw new Error(`result: ${res}`);
+    }
+  }
+
   async deletePost(id: string): Promise<void> {
     const res = await this.posts.deleteOne({ _id: id });
     if (res.deletedCount === 0) {
