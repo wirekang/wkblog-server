@@ -6,6 +6,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.19",
     "@types/mongodb": "^3.6.3",
+    "@types/showdown": "^1.9.3",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "clean-webpack-plugin": "^3.0.0",
@@ -48,7 +49,6 @@
     "test": "jest ./src"
   },
   "dependencies": {
-    "@types/showdown": "^1.9.3",
     "express": "^4.17.1",
     "mongodb": "^3.6.3",
     "showdown": "^1.9.1"
