@@ -57,7 +57,7 @@ export default class Service {
     const { title, tags, html } = this.parseMD(file);
     this.log(title);
     this.log(`${tags}`);
-    this.dao.createPost({
+    await this.dao.createPost({
       _id: file.replace('.md', ''),
       title,
       html,
@@ -69,7 +69,7 @@ export default class Service {
     const { title, tags, html } = this.parseMD(file);
     this.log(title);
     this.log(`${tags}`);
-    this.dao.updatePost({
+    await this.dao.updatePost({
       _id: file.replace('.md', ''),
       title,
       html,
@@ -81,7 +81,7 @@ export default class Service {
     const { title, tags, html } = this.parseMD(file);
     this.log(title);
     this.log(`${tags}`);
-    this.dao.publishPost({
+    await this.dao.publishPost({
       _id: file.replace('.md', ''),
       title,
       html,
