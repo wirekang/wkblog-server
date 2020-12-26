@@ -15,7 +15,7 @@ interface PostSchema extends Post{
   updatedAt: number,
   publishedAt: number,
   comments: CommentSchema[],
-  htmlHash: string,
+  nextID: number,
 }
 
 interface Comment{
@@ -25,6 +25,7 @@ interface Comment{
 }
 
 interface CommentSchema extends Comment{
+  _id: number,
   createdAt: number,
 }
 
@@ -39,7 +40,7 @@ function createEmptyPostSchema():PostSchema {
     publishedAt: 0,
     html: '',
     comments: [],
-    htmlHash: '',
+    nextID: 0,
   };
 }
 
