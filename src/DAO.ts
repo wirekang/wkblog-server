@@ -94,16 +94,20 @@ export default class DAO {
     return res;
   }
 
+  private async updatePostSchema(postSchema: PostSchema): Promise<void> {
+    const res = await this.posts.updateOne({ _id: postSchema._id }, {
+      $set: postSchema,
+    });
+    if (res.result.ok === 0 || res.result.n === 0) {
+      throw new Error(`result: ${res.result}`);
+    }
+  }
+
   async updatePost(post: Post): Promise<void> {
     const oldPostSchema = await this.readPost(post._id);
     const newPostSchema = Object.assign(oldPostSchema, post);
     newPostSchema.updatedAt = Date.now();
-    const res = await this.posts.updateOne({ _id: newPostSchema._id }, {
-      $set: newPostSchema,
-    });
-    if (res.result.nModified === 0) {
-      throw new Error(`result: ${res}`);
-    }
+    await this.updatePostSchema(newPostSchema);
   }
 
   async publishPost(post: Post): Promise<void> {
@@ -111,24 +115,14 @@ export default class DAO {
     const newPostSchema = Object.assign(oldPostSchema, post);
     newPostSchema.publishedAt = Date.now();
     newPostSchema.published = true;
-    const res = await this.posts.updateOne({ _id: newPostSchema._id }, {
-      $set: newPostSchema,
-    });
-    if (res.result.nModified === 0) {
-      throw new Error(`result: ${res}`);
-    }
+    await this.updatePostSchema(newPostSchema);
   }
 
   async withDrawPost(post: Post): Promise<void> {
     const oldPostSchema = await this.readPost(post._id);
     const newPostSchema = Object.assign(oldPostSchema, post);
     newPostSchema.published = false;
-    const res = await this.posts.updateOne({ _id: newPostSchema._id }, {
-      $set: newPostSchema,
-    });
-    if (res.result.nModified === 0) {
-      throw new Error(`result: ${res}`);
-    }
+    await this.updatePostSchema(newPostSchema);
   }
 
   async deletePost(id: string): Promise<void> {
