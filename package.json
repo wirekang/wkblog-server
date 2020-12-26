@@ -47,8 +47,11 @@
     "build": "NODE_ENV=production npx webpack --mode production --progress",
     "test": "jest ./src"
   },
+  
   "dependencies": {
+    "@types/showdown": "^1.9.3",
     "express": "^4.17.1",
-    "mongodb": "^3.6.3"
+    "mongodb": "^3.6.3",
+    "showdown": "^1.9.1"
   }
 }
