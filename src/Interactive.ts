@@ -1,7 +1,7 @@
 import readline from 'readline';
 import utils from 'utils';
 
-type Action = 'create' | 'update' | 'publish';
+type Action = 'create' | 'update' | 'publish' | 'withdraw';
 
 type State = 'main' | Action
 
@@ -24,12 +24,15 @@ export default class Interactive {
       output: process.stdout,
     }).on('line', (input) => (this.onLine(input)));
     process.stdin.on('SIGINT', () => (process.exit(0)));
+    process.stdin.on('SIGTERM', () => (process.exit(0)));
+    process.stdin.on('SIGKILL', () => (process.exit(0)));
+    process.stdin.on('close', () => (process.exit(0)));
     this.print();
   }
 
   private getMenu():string {
     if (this.state === 'main') {
-      return '1: create\n2: update\n3: publish';
+      return '1: create\n2: update\n3: publish\n4: withdraw';
     }
     return `0: all\n${this.getFileList().map((v, i) => (`${i + 1}: ${v}`)).join('\n')}`;
   }
@@ -80,6 +83,9 @@ export default class Interactive {
     }
     if (n === 3) {
       this.state = 'publish';
+    }
+    if (n === 4) {
+      this.state = 'withdraw';
     }
     this.msg = this.state;
     return true;

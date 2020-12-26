@@ -69,6 +69,9 @@ async function countDown(n:number):Promise<void> {
       if (action === 'publish') {
         await service.publish(file);
       }
+      if (action === 'withdraw') {
+        await service.withdraw(file);
+      }
     } catch (e) {
       console.log(e.message);
       await countDown(DELAY_ACTION);

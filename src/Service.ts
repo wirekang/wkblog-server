@@ -85,4 +85,15 @@ export default class Service {
       tags,
     });
   }
+
+  async withdraw(file: string):Promise<void> {
+    const { title, tags, html } = this.parseMD(file);
+    this.log(`${file}: ${title}`);
+    await this.dao.withDrawPost({
+      _id: file.replace('.md', ''),
+      title,
+      html,
+      tags,
+    });
+  }
 }
