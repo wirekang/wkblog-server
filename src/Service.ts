@@ -55,8 +55,7 @@ export default class Service {
 
   async create(file: string):Promise<void> {
     const { title, tags, html } = this.parseMD(file);
-    this.log(title);
-    this.log(`${tags}`);
+    this.log(`${file}: ${title}`);
     await this.dao.createPost({
       _id: file.replace('.md', ''),
       title,
@@ -67,8 +66,7 @@ export default class Service {
 
   async update(file: string):Promise<void> {
     const { title, tags, html } = this.parseMD(file);
-    this.log(title);
-    this.log(`${tags}`);
+    this.log(`${file}: ${title}`);
     await this.dao.updatePost({
       _id: file.replace('.md', ''),
       title,
@@ -79,8 +77,7 @@ export default class Service {
 
   async publish(file: string):Promise<void> {
     const { title, tags, html } = this.parseMD(file);
-    this.log(title);
-    this.log(`${tags}`);
+    this.log(`${file}: ${title}`);
     await this.dao.publishPost({
       _id: file.replace('.md', ''),
       title,
