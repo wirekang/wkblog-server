@@ -10,7 +10,7 @@ module.exports = {
   mode,
   entry: path.join(__dirname, 'src', 'index.ts'),
   output: {
-    filename: 'bundle.js',
+    filename: 'blog-back.js',
     path: path.join(__dirname, 'dist'),
   },
   resolve: {
