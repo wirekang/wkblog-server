@@ -4,8 +4,8 @@ import readline from 'readline';
 import path from 'path';
 import Interactive from 'Interactive';
 
-const DELAY_FIRST = 4;
-const DELAY_ACTION = 2;
+const DELAY_FIRST = 3;
+const DELAY_ACTION = 3;
 
 async function wait(mil: number):Promise<void> {
   return new Promise((resolve) => {
