@@ -33,17 +33,15 @@ async function countDown(n:number):Promise<void> {
 }
 
 (async () => {
-  const log = utils.makeLog('index');
-
   const srcPath = process.argv[2]
     ? path.resolve(process.cwd(), process.argv[2]) : process.cwd();
 
-  log(srcPath);
+  console.log(srcPath);
 
   try {
     Config.parse(srcPath);
   } catch (e) {
-    log(e);
+    console.log(e);
     process.exit(1);
   }
 
@@ -52,7 +50,7 @@ async function countDown(n:number):Promise<void> {
   try {
     await service.connect();
   } catch (e) {
-    log(e);
+    console.log(e);
     process.exit(1);
   }
 
