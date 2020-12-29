@@ -129,7 +129,7 @@ export default class DAO implements IDAO {
     this.validateResult(res);
   }
 
-  validateResult(res: {n?:number, ok?:number}):void {
+  private validateResult(res: {n?:number, ok?:number}):void {
     if ((!res.n && !res.ok) || res.n === 0 || res.ok === 0) {
       throw new Error(JSON.stringify(res));
     }
