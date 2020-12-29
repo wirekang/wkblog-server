@@ -47,7 +47,7 @@
     }
   },
   "scripts": {
-    "start": "NODE_PATH=./src node -r ts-node/register src/index.ts ./example",
+    "start": "kill-port 9229 &&NODE_PATH=./src node -r ts-node/register src/index.ts ./example",
     "debug": "NODE_PATH=./src nodemon --watch src --delay 2 --exec node -r ts-node/register --inspect src/index.ts ./example",
     "build": "NODE_ENV=production npx webpack --mode production --progress",
     "test": "jest --runInBand ./src",
