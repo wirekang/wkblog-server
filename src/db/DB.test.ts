@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import * as DB from 'db/DB';
 import Config from 'Config';
 import { IPostInput } from 'db/models/Post';
@@ -17,7 +16,7 @@ const makeString = (length: number) => (
 );
 
 const makeArray = <T>(length:number, def:()=>T | T) => (
-  new Array<T>(length).fill(0 as any).map((v) => ((typeof (def) === 'function') ? def() : def))
+  new Array<T>(length).fill(0 as any).map(() => ((typeof (def) === 'function') ? def() : def))
 );
 
 const makeTags = (count: number, length:number) => makeArray<string>(
@@ -45,10 +44,6 @@ const makeCommentInput = (
   passwordHash: makeString(passwordLength),
   text: makeString(textLength),
 } as ICommentInput);
-
-const tags = makeArray<string>(
-  crypto.randomInt(5), makeString.bind(null, 3, 10),
-);
 
 describe('DB', () => {
   test('connect', async () => {
