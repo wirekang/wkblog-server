@@ -53,14 +53,14 @@ describe('DB', () => {
   test('readCounter, deleteCounter', async () => {
     const f = async (which: string, loop:number) => {
       const get = () => DB.readCounter(which);
-      const f = async (left:number) => {
+      const recursive = async (left:number) => {
         if (left !== 0) {
           const nextID = await get();
           expect(await get()).toBe(nextID + 1);
-          await f(left - 1);
+          await recursive(left - 1);
         }
       };
-      await f(loop);
+      await recursive(loop);
     };
     const newID = makeString(3);
     await f(newID, 2);
