@@ -2,7 +2,7 @@ import { getModelForClass, prop } from '@typegoose/typegoose';
 import { Comment } from 'db/models/Comment';
 
 export class Post {
-  @prop({ unique: true, index: true })
+  @prop()
   _id!: number;
 
   @prop({ trim: true, maxlength: 50 })
