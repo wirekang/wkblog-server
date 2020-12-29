@@ -12,11 +12,16 @@ class Config {
 
   database!:string
 
-  parse(srcPath: string) {
-    const cfg = fs.readFileSync(path.join(srcPath, '.config'));
+  key!:string
+
+  parse(configFilePath: string) {
+    const cfg = fs.readFileSync(
+      path.resolve(process.cwd(), configFilePath),
+    );
     Object.assign(this, JSON.parse(cfg.toString()));
-    console.log('[Config] OK');
-    if (!(this.host && this.port && this.user && this.password && this.database)) {
+    console.log('Config loaded');
+    if (!(this.host && this.port && this.user && this.password
+      && this.database && this.key)) {
       throw new Error(`Config: ${this}`);
     }
   }
