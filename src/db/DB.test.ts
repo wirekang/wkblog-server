@@ -1,7 +1,7 @@
-import * as DB from 'db/DB';
+import DAO from 'db/DAO';
 import Config from 'Config';
-import { IPostInput } from 'db/models/Post';
-import { Comment, ICommentInput } from 'db/models/Comment';
+import { Comment } from 'db/models/Comment';
+import { IPostInput, ICommentInput } from 'db/interfaces';
 
 test('Config.parse', () => {
   Config.parse('.config');
@@ -45,14 +45,15 @@ const makeCommentInput = (
   text: makeString(textLength),
 } as ICommentInput);
 
-describe('DB', () => {
+describe('DAO', () => {
+  const dao = new DAO();
   test('connect', async () => {
-    await DB.connect();
+    await dao.connect();
   });
 
   test('readCounter, deleteCounter', async () => {
     const f = async (which: string, loop:number) => {
-      const get = () => DB.readCounter(which);
+      const get = () => dao.readCounter(which);
       const recursive = async (left:number) => {
         if (left !== 0) {
           const nextID = await get();
@@ -65,32 +66,32 @@ describe('DB', () => {
     const newID = makeString(3);
     await f(newID, 2);
     await f('justfortest', 2);
-    await DB.deleteCounter(newID);
+    await dao.deleteCounter(newID);
   });
 
   let postID = 0;
 
   test('createPost', async () => {
-    postID = await DB.createPost(makePostInput(10, 100, 5, 10, 1000));
+    postID = await dao.createPost(makePostInput(10, 100, 5, 10, 1000));
     expect(Number.isInteger(postID)).toBe(true);
   });
 
   test('readPost', async () => {
-    const post = await DB.readPost(postID);
+    const post = await dao.readPost(postID);
     expect(post._id).toBe(postID);
     expect(Date.now() - post.createdAt).toBeLessThanOrEqual(maxTimeGap);
   });
 
   test('updatePost', async () => {
-    await DB.updatePost(postID, makePostInput(20, 90, 4, 5, 2000));
-    const post = await DB.readPost(postID);
+    await dao.updatePost(postID, makePostInput(20, 90, 4, 5, 2000));
+    const post = await dao.readPost(postID);
     expect(Date.now() - post.updatedAt).toBeLessThanOrEqual(maxTimeGap);
   });
 
   const commentInputs = [] as ICommentInput[];
 
   test('createComment, readCommentCount', async () => {
-    const readCount = () => DB.readCommentCount(postID);
+    const readCount = () => dao.readCommentCount(postID);
 
     const recursive = async (n:number) => {
       if (n !== 0) { await recursive(n - 1); }
@@ -98,7 +99,7 @@ describe('DB', () => {
       expect(count).toBe(n);
       const commentInput = makeCommentInput(10, 10, 100);
       commentInputs.push(commentInput);
-      await DB.createComment(postID, commentInput);
+      await dao.createComment(postID, commentInput);
     };
 
     await recursive(3);
@@ -107,26 +108,26 @@ describe('DB', () => {
   const comments = [] as Comment[];
 
   test('readComments', async () => {
-    const post = await DB.readPost(postID);
+    const post = await dao.readPost(postID);
     expect(post.comments.length).toBe(commentInputs.length);
-    comments.push(...await DB.readComments(postID));
+    comments.push(...await dao.readComments(postID));
     expect(post.comments.length).toEqual(comments.length);
   });
 
   test('deleteComments', async () => {
     const ps = [] as Promise<void>[];
     comments.forEach((comment) => {
-      ps.push(DB.deleteComments(postID, comment.num));
+      ps.push(dao.deleteComments(postID, comment.num));
     });
     await Promise.all(ps);
-    expect(await DB.readCommentCount(postID)).toBe(0);
+    expect(await dao.readCommentCount(postID)).toBe(0);
   });
 
   test('deletePost', async () => {
-    await DB.deletePost(postID);
+    await dao.deletePost(postID);
   });
 
   test('disconnect', async () => {
-    await DB.disconnect();
+    await dao.disconnect();
   });
 });

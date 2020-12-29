@@ -1,4 +1,4 @@
-import { prop } from '@typegoose/typegoose';
+import { getModelForClass, prop } from '@typegoose/typegoose';
 
 export class Comment {
   @prop()
@@ -20,8 +20,6 @@ export class Comment {
   updatedAt!: number;
 }
 
-export interface ICommentInput {
-  name: Comment['name'],
-  passwordHash: Comment['passwordHash'],
-  text: Comment['text'],
-}
+export default getModelForClass(Comment, {
+  schemaOptions: { versionKey: false, _id: false },
+});

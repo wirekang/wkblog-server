@@ -38,10 +38,3 @@ export default getModelForClass(Post, {
     versionKey: false,
   },
 });
-
-export interface IPostInput {
-  title: Post['title'],
-  description: Post['description'],
-  tags: Post['tags'],
-  html: Post['html'],
-}
