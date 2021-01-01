@@ -25,5 +25,7 @@ module.exports = {
     }],
     'no-shadow': 0,
     '@typescript-eslint/no-shadow': 1,
+    semi: 'off',
+    '@typescript-eslint/semi': ['error'],
   },
 };
