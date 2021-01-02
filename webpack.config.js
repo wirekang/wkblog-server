@@ -3,11 +3,10 @@
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
-const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
   target:"node",
-  mode,
+  mode: 'production',
   entry: path.join(__dirname, 'src', 'index.ts'),
   output: {
     filename: 'blog-back.js',
