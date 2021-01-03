@@ -93,7 +93,7 @@ export interface Service{
   onPostUpdate(hash:string, input: PostUpdateInput): Promise<ServiceResult>
   onPostRead(hash:string, id: Post['id']): Promise<ServiceResult>
   onPostCount(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
-  onPostsRead(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
+  onPostsRead(hash:string, offset:number, count:number, tagId?: Tag['id']): Promise<ServiceResult>
   onPostDelete(hash:string, id: Post['id']): Promise<ServiceResult>
 
   onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult>
