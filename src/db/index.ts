@@ -107,27 +107,33 @@ export default class DB implements DAO {
     }
   }
 
-  async readPost(id: number): Promise<Post> {
-    const pm = await this.postRepo.findOne(id, { relations: ['comments', 'tags'] });
+  async readPost(id: number, withHide = false): Promise<Post> {
+    const pm = await this.postRepo.findOne(id,
+      {
+        relations: ['comments', 'tags'],
+        where: withHide ? {} : { published: true },
+      });
     if (!pm) {
       throw Error();
     }
     return toPost(pm);
   }
 
-  async readPostCount(tagId?:number): Promise<number> {
+  async readPostCount(tagId?:number, withHide = false): Promise<number> {
     const count = await this.postRepo.createQueryBuilder('p')
-      .where(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
+      .where(withHide ? 'true' : 'p.published = 1')
+      .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
       .leftJoinAndSelect('p.tags', 'tag')
       .getCount();
     return count;
   }
 
-  async readPosts(offset: number, count: number, tagId?: number)
+  async readPosts(offset: number, count: number, tagId?: number, withHide = false)
   : Promise<PostSummary[]> {
     const pms = await this.postRepo.createQueryBuilder('p')
       .select(['p.id', 'p.title', 'p.description', 'p.whenPublished'])
-      .where(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
+      .where(withHide ? 'true' : 'p.published = 1')
+      .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
       .leftJoinAndSelect('p.tags', 'tag')
       .orderBy('p.whenPublished', 'DESC')
       .skip(offset)
