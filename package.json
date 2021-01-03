@@ -4,12 +4,17 @@
   "description": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/bluebird": "^3.5.33",
     "@types/jest": "^26.0.19",
     "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-json": "^2.0.18",
     "@types/koa-router": "^7.4.1",
-    "@types/mongodb": "^3.6.3",
-    "@types/mongoose": "^5.10.3",
+    "@types/node": "^14.14.14",
+    "@types/request": "^2.48.5",
+    "@types/request-promise-native": "^1.0.17",
     "@types/showdown": "^1.9.3",
+    "@types/validator": "^13.1.2",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",
     "clean-webpack-plugin": "^3.0.0",
@@ -55,10 +60,16 @@
     "test:server": "jest --runInBand ./src/server"
   },
   "dependencies": {
-    "@typegoose/typegoose": "^7.4.5",
+    "inversify": "^5.0.5",
     "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-json": "^2.0.2",
     "koa-router": "^10.0.0",
-    "mongoose": "^5.10.18",
-    "showdown": "^1.9.1"
+    "mysql2": "^2.2.5",
+    "reflect-metadata": "^0.1.13",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9",
+    "showdown": "^1.9.1",
+    "typeorm": "^0.2.29"
   }
 }
