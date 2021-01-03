@@ -18,8 +18,12 @@ export default class Auth implements IAuth {
     throw Error();
   }
 
-  validate(hash: string): boolean {
-    if (Date.now() - this.when > Config.maxAge) { return false; }
-    return this.hash === hash;
+  validate(hash: string): void {
+    if (Date.now() - this.when > Config.maxAge) {
+      throw Error();
+    }
+    if (this.hash !== hash) {
+      throw Error();
+    }
   }
 }
