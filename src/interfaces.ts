@@ -41,7 +41,7 @@ export interface Comment{
   parentId: Comment['id']
   childrenIds: Comment['id'][]
   name: string
-  passwordHash: string
+  password: string
   text: string
   updated: boolean
   whenCreated: number
@@ -52,14 +52,19 @@ export interface CommentInput{
   postId: Post['id']
   parentId: Comment['id'] | null,
   name: Comment['name']
-  password: string
+  password: Comment['password']
   text: Comment['text']
 }
 
 export interface CommentUpdateInput{
   id: Comment['id']
-  password: string
+  password: Comment['password']
   text: Comment['text']
+}
+
+export interface CommentDeleteInput{
+  id: Comment['id']
+  password: Comment['password']
 }
 
 export interface Tag{
@@ -94,7 +99,7 @@ export interface Service{
   onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult>
   onCommentUpdate(hash:string, input:CommentUpdateInput): Promise<ServiceResult>
   onCommentRead(postId:Post['id']): Promise<ServiceResult>
-  onCommentDelete(hash:string, id:Comment['id']): Promise<ServiceResult>
+  onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult>
 }
 
 export interface DAO {

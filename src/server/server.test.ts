@@ -1,14 +1,15 @@
-import * as Server from 'server/Server';
+import Server from 'server';
 import request from 'request-promise-native';
 
 const port = 8081;
 
 describe('Server', () => {
+  const server = new Server(port);
   test('open', async () => {
-    await Server.open(port);
+    await server.open();
   });
 
   test('close', async () => {
-    await Server.close();
+    await server.close();
   });
 });

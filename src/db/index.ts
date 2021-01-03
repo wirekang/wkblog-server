@@ -102,7 +102,7 @@ export default class DB implements DAO {
     }
   }
 
-  async readPost(id: number, withHide = false): Promise<Post> {
+  async readPost(id: number, withHide: boolean): Promise<Post> {
     const pm = await this.postRepo.findOne(id,
       {
         relations: ['comments', 'tags'],
@@ -114,7 +114,7 @@ export default class DB implements DAO {
     return toPost(pm);
   }
 
-  async readPostCount(tagId?:number, withHide = false): Promise<number> {
+  async readPostCount(withHide: boolean, tagId?:number): Promise<number> {
     const count = await this.postRepo.createQueryBuilder('p')
       .where(withHide ? 'true' : 'p.published = 1')
       .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
@@ -123,7 +123,7 @@ export default class DB implements DAO {
     return count;
   }
 
-  async readPosts(offset: number, count: number, tagId?: number, withHide = false)
+  async readPosts(offset: number, count: number, withHide: boolean, tagId?: number)
   : Promise<PostSummary[]> {
     const pms = await this.postRepo.createQueryBuilder('p')
       .select(['p.id', 'p.title', 'p.description', 'p.whenPublished'])

@@ -5,17 +5,21 @@ import utils from 'utils';
 
 @injectable()
 export default class Auth implements IAuth {
-  private hash?: string;
+  private hash!: string;
+
+  private when!: number;
 
   login(id: string, pw: string): string {
-    const hash = utils.makeHash(id + pw);
-    if (Config.hash === hash) {
-      this.hash = hash;
+    this.when = Date.now();
+    if (Config.hash === utils.makeHash(id + pw)) {
+      this.hash = utils.makeHash(Config.hash + this.when.toString(10));
+      return this.hash;
     }
-    return hash;
+    throw Error();
   }
 
   validate(hash: string): boolean {
+    if (Date.now() - this.when > Config.maxAge) { return false; }
     return this.hash === hash;
   }
 }

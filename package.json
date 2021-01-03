@@ -5,6 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/bluebird": "^3.5.33",
+    "@types/escape-html": "^1.0.0",
     "@types/jest": "^26.0.19",
     "@types/koa": "^2.11.6",
     "@types/koa-bodyparser": "^4.3.0",
@@ -60,6 +61,7 @@
     "test:server": "jest --runInBand ./src/server"
   },
   "dependencies": {
+    "escape-html": "^1.0.3",
     "inversify": "^5.0.5",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",

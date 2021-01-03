@@ -6,7 +6,6 @@ describe('Auth', () => {
   Config.parse('.config');
   const auth = new Auth();
   it('login', () => {
-    const hash = auth.login('qwer', 'asdffds');
-    expect(auth.validate(hash)).toBe(false);
+    expect(auth.login('qwer', 'asdffds')).toBeFalsy();
   });
 });

@@ -31,7 +31,7 @@ export function toComment(cm:CommentModel): Comment {
     id: cm.id,
     name: cm.name,
     parentId: cm.parentId,
-    passwordHash: cm.passwordHash,
+    password: cm.password,
     postId: cm.postId,
     text: cm.text,
     whenCreated: cm.whenCreated,

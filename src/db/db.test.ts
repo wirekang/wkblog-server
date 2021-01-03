@@ -20,7 +20,7 @@ describe('DB', () => {
       tagNames: ['태그1', 'tag2', 'tag 3'],
     };
     pid = await dao.createPost(input);
-    const post = await dao.readPost(pid);
+    const post = await dao.readPost(pid, true);
     expect(post.id).toBe(pid);
     expect(post.title).toBe(input.title);
     expect(Date.now() - post.whenCreated).toBeLessThanOrEqual(1000);
@@ -36,7 +36,7 @@ describe('DB', () => {
       tagNames: ['태그1'],
     };
     await dao.updatePost(input);
-    const post = await dao.readPost(pid);
+    const post = await dao.readPost(pid, true);
     expect(post.id).toBe(pid);
     expect(Date.now() - post.whenUpdated).toBeLessThanOrEqual(1000);
     expect(post.tags.map((v) => v.name).sort()).toEqual(input.tagNames.sort());
@@ -44,14 +44,14 @@ describe('DB', () => {
 
   it('포스트 공개', async () => {
     await dao.publishPost(pid);
-    const post = await dao.readPost(pid);
+    const post = await dao.readPost(pid, false);
     expect(post.published).toBe(true);
     expect(Date.now() - post.whenPublished).toBeLessThanOrEqual(1000);
   });
 
   it('포스트 비공개', async () => {
     await dao.hidePost(pid);
-    const post = await dao.readPost(pid);
+    const post = await dao.readPost(pid, true);
     expect(post.published).toBe(false);
   });
 
@@ -68,7 +68,7 @@ describe('DB', () => {
     expect(comments.length).toBe(1);
     expect(comments[0].id).toBe(cid);
 
-    const post = await dao.readPost(pid);
+    const post = await dao.readPost(pid, true);
     expect(post.comments).toEqual(comments);
   });
 
@@ -92,7 +92,7 @@ describe('DB', () => {
       };
       const COUNT = 100;
       await createRecursive(COUNT);
-      const allCount = await dao.readPostCount();
+      const allCount = await dao.readPostCount(true);
       expect(allCount).toBe(COUNT);
 
       const print = [] as string[];
@@ -101,7 +101,7 @@ describe('DB', () => {
       ) => {
         if (offset < max) {
           print.push(`tag ${tagId || 'all'} ${offset} - ${offset + count}`);
-          const pss = await dao.readPosts(offset, count, tagId);
+          const pss = await dao.readPosts(offset, count, true, tagId);
           print.push(pss.map((ps) => ps.id).join(','));
           await pageRecursive(offset + count, count, max, tagId);
         }
@@ -110,7 +110,7 @@ describe('DB', () => {
       print.push('\n');
 
       const TAGID = 4;
-      const tagCount = await dao.readPostCount(TAGID);
+      const tagCount = await dao.readPostCount(true, TAGID);
       await pageRecursive(0, 10, tagCount, TAGID);
       console.log(`all:${allCount} ${TAGID}:${tagCount}`);
       console.log(print.join('\n'));

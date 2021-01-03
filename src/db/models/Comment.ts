@@ -12,7 +12,7 @@ export default class CommentModel {
   name!: string;
 
   @Column()
-  passwordHash!: string;
+  password!: string;
 
   @Column()
   text!: string;
