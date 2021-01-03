@@ -2,17 +2,17 @@ import fs from 'fs';
 import path from 'path';
 
 class Config {
-  host!:string
+  host!:string;
 
-  port!:number
+  port!:number;
 
-  user!:string
+  username!:string;
 
-  password!:string
+  password!:string;
 
-  database!:string
+  database!:string;
 
-  key!:string
+  key!:string;
 
   parse(configFilePath: string) {
     const cfg = fs.readFileSync(
@@ -20,7 +20,7 @@ class Config {
     );
     Object.assign(this, JSON.parse(cfg.toString()));
     console.log('Config loaded');
-    if (!(this.host && this.port && this.user && this.password
+    if (!(this.host && this.port && this.username && this.password
       && this.database && this.key)) {
       throw new Error(`Config: ${this}`);
     }
