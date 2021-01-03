@@ -1,5 +1,5 @@
-import Config from 'Config';
 import 'reflect-metadata';
+import Config from 'Config';
 import DAO from 'db';
 import { CommentInput, PostInput, PostUpdateInput } from 'interfaces';
 
