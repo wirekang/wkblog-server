@@ -78,7 +78,6 @@ export interface DBOption{
 
 export interface ServiceResult{
   ok: number
-  msg: string
   result: any
 }
 
