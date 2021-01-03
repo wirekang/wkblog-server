@@ -100,6 +100,8 @@ export interface Service{
   onCommentUpdate(hash:string, input:CommentUpdateInput): Promise<ServiceResult>
   onCommentsRead(postId:Post['id']): Promise<ServiceResult>
   onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult>
+
+  onTagsRead(): Promise<ServiceResult>
 }
 
 export interface DAO {
@@ -120,6 +122,7 @@ export interface DAO {
   readComments(postId:Post['id']): Promise<Comment[]>
   deleteComment(input: CommentDeleteInput, admin: boolean): Promise<void>
 
+  readTags(): Promise<Tag[]>
 }
 
 export interface ServerOption{

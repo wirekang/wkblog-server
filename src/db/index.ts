@@ -4,7 +4,7 @@ import {
 import { injectable } from 'inversify';
 import {
   Comment, CommentDeleteInput, CommentInput, CommentUpdateInput, DAO,
-  DBOption, Post, PostInput, PostSummary, PostUpdateInput,
+  DBOption, Post, PostInput, PostSummary, PostUpdateInput, Tag,
 } from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'db/models';
 import { toComment, toPost, toTag } from 'db/convert';
@@ -203,5 +203,10 @@ export default class MyDAO implements DAO {
       throw Error();
     }
     await this.commentRepo.remove(cm);
+  }
+
+  async readTags(): Promise<Tag[]> {
+    const tms = await this.tagRepo.find();
+    return tms.map((tm) => toTag(tm));
   }
 }
