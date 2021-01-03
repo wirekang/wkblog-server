@@ -1,14 +1,21 @@
 import {
   createConnection, Connection, Repository, getConnection,
 } from 'typeorm';
+import { inject, injectable } from 'inversify';
 import {
   Comment, CommentInput, CommentUpdateInput, DAO, DBOption, Post,
   PostInput, PostSummary, PostUpdateInput,
 } from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'db/models';
 import { toComment, toPost, toTag } from 'db/convert';
+import TYPES from 'Types';
 
+@injectable()
 export default class DB implements DAO {
+  @inject(TYPES.Auth) private auth!: Auth;
+
+  @inject(TYPES.Filter) private filter!: Filter;
+
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;
