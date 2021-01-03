@@ -69,7 +69,7 @@ export default class DB implements DAO {
   async updatePost(input: PostUpdateInput): Promise<void> {
     const count = await this.postRepo.count({ id: input.id });
     if (!count) {
-      throw new Error('404');
+      throw Error();
     }
     const tags = await this.validateTags(input.tagNames);
     await this.postRepo.save({
@@ -96,14 +96,14 @@ export default class DB implements DAO {
       whenPublished: Date.now() * 2,
     });
     if (!res.affected) {
-      throw new Error('영향 없음');
+      throw Error();
     }
   }
 
   async readPost(id: number): Promise<Post> {
     const pm = await this.postRepo.findOne(id, { relations: ['comments', 'tags'] });
     if (!pm) {
-      throw new Error(`Post not found. id:${id}`);
+      throw Error();
     }
     return toPost(pm);
   }
@@ -141,7 +141,7 @@ export default class DB implements DAO {
   async deletePost(id: number): Promise<void> {
     const pm = await this.postRepo.findOne(id);
     if (!pm) {
-      throw new Error('404');
+      throw Error();
     }
     await this.postRepo.remove(pm);
   }
@@ -160,7 +160,7 @@ export default class DB implements DAO {
   async updateComment(input: CommentUpdateInput): Promise<void> {
     const count = await this.commentRepo.count({ id: input.id });
     if (!count) {
-      throw new Error('404');
+      throw Error();
     }
     await this.commentRepo.save({
       id: input.id,
@@ -178,7 +178,7 @@ export default class DB implements DAO {
   async deleteComment(id: number): Promise<void> {
     const cm = await this.commentRepo.findOne(id);
     if (!cm) {
-      throw new Error('404');
+      throw Error();
     }
     await this.commentRepo.remove(cm);
   }
