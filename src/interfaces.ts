@@ -38,7 +38,7 @@ export interface PostSummary{
 export interface Comment{
   id: number
   postId: Post['id']
-  parentId: Comment['id']
+  parentId: Comment['id'] | null
   name: string
   text: string
   updated: boolean
