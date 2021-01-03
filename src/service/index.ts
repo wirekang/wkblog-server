@@ -29,6 +29,7 @@ export default class Service implements IService {
   async onPostCreate(hash:string, input: PostInput): Promise<ServiceResult> {
     const result = { ok: 1, result: 0 } as ServiceResult;
     try {
+      this.auth.validate(hash);
       result.result = await this.dao.createPost(input);
     } catch (e) {
       result.ok = 0;
@@ -40,6 +41,7 @@ export default class Service implements IService {
   async onPostUpdate(hash:string, input: PostUpdateInput): Promise<ServiceResult> {
     const result = { ok: 1, result: 0 } as ServiceResult;
     try {
+      this.auth.validate(hash);
       await this.dao.updatePost(input);
     } catch (e) {
       result.ok = 0;
