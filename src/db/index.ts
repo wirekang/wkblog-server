@@ -102,11 +102,11 @@ export default class DB implements DAO {
     }
   }
 
-  async readPost(id: number, withHide: boolean): Promise<Post> {
+  async readPost(id: number, admin: boolean): Promise<Post> {
     const pm = await this.postRepo.findOne(id,
       {
         relations: ['comments', 'tags'],
-        where: withHide ? {} : { published: true },
+        where: admin ? {} : { published: true },
       });
     if (!pm) {
       throw Error();
@@ -114,20 +114,20 @@ export default class DB implements DAO {
     return toPost(pm);
   }
 
-  async readPostCount(withHide: boolean, tagId?:number): Promise<number> {
+  async readPostCount(admin: boolean, tagId?:number): Promise<number> {
     const count = await this.postRepo.createQueryBuilder('p')
-      .where(withHide ? 'true' : 'p.published = 1')
+      .where(admin ? 'true' : 'p.published = 1')
       .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
       .leftJoinAndSelect('p.tags', 'tag')
       .getCount();
     return count;
   }
 
-  async readPosts(offset: number, count: number, withHide: boolean, tagId?: number)
+  async readPosts(offset: number, count: number, admin: boolean, tagId?: number)
   : Promise<PostSummary[]> {
     const pms = await this.postRepo.createQueryBuilder('p')
       .select(['p.id', 'p.title', 'p.description', 'p.whenPublished'])
-      .where(withHide ? 'true' : 'p.published = 1')
+      .where(admin ? 'true' : 'p.published = 1')
       .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
       .leftJoinAndSelect('p.tags', 'tag')
       .orderBy('p.whenPublished', 'DESC')
@@ -154,20 +154,28 @@ export default class DB implements DAO {
     await this.postRepo.remove(pm);
   }
 
-  async createComment(input: CommentInput): Promise<number> {
+  async createComment(input: CommentInput, admin: boolean): Promise<number> {
     const cm = await this.commentRepo.save({
-      name: input.name,
-      passwordHash: input.password,
+      name: admin ? '-' : input.name,
+      password: admin ? '-' : input.password,
+      admin,
       text: input.text,
       postId: input.postId,
+      parentId: input.parentId,
       whenCreated: Date.now(),
     });
     return cm.id;
   }
 
-  async updateComment(input: CommentUpdateInput): Promise<void> {
-    const count = await this.commentRepo.count({ id: input.id });
-    if (!count) {
+  async updateComment(input: CommentUpdateInput, admin: boolean): Promise<void> {
+    const cm = await this.commentRepo.findOne(input.id, { select: ['admin', 'password'] });
+    if (!cm) {
+      throw Error();
+    }
+    if (admin !== cm.admin) {
+      throw Error();
+    }
+    if (!admin && cm.password !== input.password) {
       throw Error();
     }
     await this.commentRepo.save({
@@ -183,9 +191,15 @@ export default class DB implements DAO {
     return cms.map((c) => toComment(c));
   }
 
-  async deleteComment(id: number): Promise<void> {
-    const cm = await this.commentRepo.findOne(id);
+  async deleteComment(input:CommentDeleteInput, admin: boolean): Promise<void> {
+    const cm = await this.commentRepo.findOne(input.id, { select: ['id', 'password', 'admin'] });
     if (!cm) {
+      throw Error();
+    }
+    if (admin !== cm.admin) {
+      throw Error();
+    }
+    if (!admin && cm.password !== input.password) {
       throw Error();
     }
     await this.commentRepo.remove(cm);

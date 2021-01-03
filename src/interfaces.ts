@@ -108,15 +108,15 @@ export interface DAO {
   updatePost(input: PostUpdateInput): Promise<void>
   publishPost(id: Post['id']): Promise<void>
   hidePost(id: Post['id']): Promise<void>
-  readPost(id: Post['id'], withHide:boolean): Promise<Post>
-  readPostCount(withHide:boolean, tagId?: Tag['id']): Promise<number>
-  readPosts(offset:number, count:number, withHide:boolean, tagId?:Tag['id']): Promise<PostSummary[]>
+  readPost(id: Post['id'], admin:boolean): Promise<Post>
+  readPostCount(admin:boolean, tagId?: Tag['id']): Promise<number>
+  readPosts(offset:number, count:number, admin:boolean, tagId?:Tag['id']): Promise<PostSummary[]>
   deletePost(id: Post['id']): Promise<void>
 
-  createComment(input: CommentInput): Promise<Comment['id']>
-  updateComment(input: CommentUpdateInput): Promise<void>
+  createComment(input: CommentInput, admin:boolean): Promise<Comment['id']>
+  updateComment(input: CommentUpdateInput, admin:boolean): Promise<void>
   readComments(postId:Post['id']): Promise<Comment[]>
-  deleteComment(id:Comment['id']): Promise<void>
+  deleteComment(input: CommentDeleteInput, admin: boolean): Promise<void>
 
 }
 

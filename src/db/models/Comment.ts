@@ -11,6 +11,9 @@ export default class CommentModel {
   @Column()
   name!: string;
 
+  @Column({ default: false })
+  admin!: boolean;
+
   @Column()
   password!: string;
 
