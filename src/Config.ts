@@ -16,6 +16,8 @@ class Config {
 
   hash!:string;
 
+  maxAge!: number;
+
   parse(configFilePath: string) {
     const cfg = fs.readFileSync(
       path.resolve(process.cwd(), configFilePath),
