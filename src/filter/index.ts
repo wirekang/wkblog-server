@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
-import { Filter as IFilter } from 'interfaces';
+import { Filter } from 'interfaces';
 import escapeHtml from 'escape-html';
 
-export default class Filter implements IFilter {
+export default class MyFilter implements Filter {
   escapeHTML(text: string): string {
     return escapeHtml(this.filter(text));
   }

@@ -1,10 +1,10 @@
 import Config from 'Config';
-import { Auth as IAuth } from 'interfaces';
+import { Auth } from 'interfaces';
 import { injectable } from 'inversify';
 import utils from 'utils';
 
 @injectable()
-export default class Auth implements IAuth {
+export default class MyAuth implements Auth {
   private hash!: string;
 
   private when!: number;

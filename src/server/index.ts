@@ -3,9 +3,9 @@ import Koa from 'koa';
 import Router from 'koa-router';
 import json from 'koa-json';
 import bodyParser from 'koa-bodyparser';
-import { ServerOption, Server as IServer } from 'interfaces';
+import { ServerOption, Server } from 'interfaces';
 
-export default class Server implements IServer {
+export default class MyServer implements Server {
   private app:Koa;
 
   private router: Router;

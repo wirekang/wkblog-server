@@ -10,7 +10,7 @@ import { CommentModel, PostModel, TagModel } from 'db/models';
 import { toComment, toPost, toTag } from 'db/convert';
 
 @injectable()
-export default class DB implements DAO {
+export default class MyDAO implements DAO {
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;
