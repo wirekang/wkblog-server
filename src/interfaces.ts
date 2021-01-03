@@ -84,17 +84,17 @@ export interface ServiceResult{
 export interface Service{
   onLogin(id:string, pw:string): Promise<ServiceResult>
 
-  onPostCreate(input: PostInput): Promise<ServiceResult>
-  onPostUpdate(input: PostUpdateInput): Promise<ServiceResult>
-  onPostRead(id: Post['id']): Promise<ServiceResult>
-  onPostCount(tagId?: Tag['id']): Promise<ServiceResult>
-  onPostsRead(tagId?: Tag['id']): Promise<ServiceResult>
-  onPostDelete(id: Post['id']): Promise<ServiceResult>
+  onPostCreate(hash:string, input: PostInput): Promise<ServiceResult>
+  onPostUpdate(hash:string, input: PostUpdateInput): Promise<ServiceResult>
+  onPostRead(hash:string, id: Post['id']): Promise<ServiceResult>
+  onPostCount(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
+  onPostsRead(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
+  onPostDelete(hash:string, id: Post['id']): Promise<ServiceResult>
 
-  onCommentCreate(input: CommentInput): Promise<ServiceResult>
-  onCommentUpdate(input:CommentUpdateInput): Promise<ServiceResult>
+  onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult>
+  onCommentUpdate(hash:string, input:CommentUpdateInput): Promise<ServiceResult>
   onCommentRead(postId:Post['id']): Promise<ServiceResult>
-  onCommentDelete(id:Comment['id']): Promise<ServiceResult>
+  onCommentDelete(hash:string, id:Comment['id']): Promise<ServiceResult>
 }
 
 export interface DAO {
@@ -105,9 +105,9 @@ export interface DAO {
   updatePost(input: PostUpdateInput): Promise<void>
   publishPost(id: Post['id']): Promise<void>
   hidePost(id: Post['id']): Promise<void>
-  readPost(id: Post['id'], withHide?:boolean): Promise<Post>
-  readPostCount(tagId?: Tag['id'], withHide?:boolean): Promise<number>
-  readPosts(offset:number, count:number, tagId?:Tag['id'], withHide?:boolean): Promise<PostSummary[]>
+  readPost(id: Post['id'], withHide:boolean): Promise<Post>
+  readPostCount(withHide:boolean, tagId?: Tag['id']): Promise<number>
+  readPosts(offset:number, count:number, withHide:boolean, tagId?:Tag['id']): Promise<PostSummary[]>
   deletePost(id: Post['id']): Promise<void>
 
   createComment(input: CommentInput): Promise<Comment['id']>
@@ -127,7 +127,7 @@ export interface Server {
 }
 
 export interface Filter {
-  ensureText(str: string): string
+  escapeHTML(html: string): string
 }
 
 export interface Auth{
