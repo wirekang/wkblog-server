@@ -89,6 +89,8 @@ export interface Service{
 
   onPostCreate(hash:string, input: PostInput): Promise<ServiceResult>
   onPostUpdate(hash:string, input: PostUpdateInput): Promise<ServiceResult>
+  onPostPublish(hash: string, id: Post['id']): Promise<ServiceResult>
+  onPoshHide(hash: string, id: Post['id']): Promise<ServiceResult>
   onPostRead(hash:string, id: Post['id']): Promise<ServiceResult>
   onPostCount(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
   onPostsRead(hash:string, offset:number, count:number, tagId?: Tag['id']): Promise<ServiceResult>
