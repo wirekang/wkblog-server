@@ -3,8 +3,8 @@ import {
 } from 'typeorm';
 import { inject, injectable } from 'inversify';
 import {
-  Comment, CommentInput, CommentUpdateInput, DAO, DBOption, Post,
-  PostInput, PostSummary, PostUpdateInput,
+  Auth, Comment, CommentInput, CommentUpdateInput, DAO,
+  DBOption, Filter, Post, PostInput, PostSummary, PostUpdateInput,
 } from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'db/models';
 import { toComment, toPost, toTag } from 'db/convert';
