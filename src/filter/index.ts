@@ -8,6 +8,6 @@ export default class Filter implements IFilter {
   }
 
   filter(text: string): string {
-    return text;
+    return text.trim().replaceAll('wirekang', '');
   }
 }
