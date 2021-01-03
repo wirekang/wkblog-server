@@ -1,3 +1,1 @@
-import Config from 'Config';
-
-Config.parse('.config');
+import 'reflect-metadata';
