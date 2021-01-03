@@ -76,6 +76,28 @@ export interface DBOption{
 
 }
 
+export interface ServiceResult{
+  ok: number
+  msg: string
+  result: any
+}
+
+export interface Service{
+  onLogin(id:string, pw:string): Promise<ServiceResult>
+
+  onPostCreate(input: PostInput): Promise<ServiceResult>
+  onPostUpdate(input: PostUpdateInput): Promise<ServiceResult>
+  onPostRead(id: Post['id']): Promise<ServiceResult>
+  onPostCount(tagId?: Tag['id']): Promise<ServiceResult>
+  onPostsRead(tagId?: Tag['id']): Promise<ServiceResult>
+  onPostDelete(id: Post['id']): Promise<ServiceResult>
+
+  onCommentCreate(input: CommentInput): Promise<ServiceResult>
+  onCommentUpdate(input:CommentUpdateInput): Promise<ServiceResult>
+  onCommentRead(postId:Post['id']): Promise<ServiceResult>
+  onCommentDelete(id:Comment['id']): Promise<ServiceResult>
+}
+
 export interface DAO {
   connect(option: DBOption): Promise<void>
   close(): Promise<void>
@@ -96,11 +118,20 @@ export interface DAO {
 
 }
 
+export interface ServerOption{
+  port: number
+}
+
+export interface Server {
+  open(option: ServerOption): Promise<void>
+  close(): Promise<void>
+}
+
 export interface Filter {
   ensureText(str: string): string
 }
 
 export interface Auth{
   login(id:string, pw:string):string
-  validate(hash: string): boolean
+  validate(hash:string):boolean
 }
