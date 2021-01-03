@@ -187,7 +187,7 @@ export default class DB implements DAO {
   }
 
   async readComments(postId: number): Promise<Comment[]> {
-    const cms = await this.commentRepo.find({ where: { postId } });
+    const cms = await this.commentRepo.find({ where: { postId }, order: { whenCreated: 'ASC' } });
     return cms.map((c) => toComment(c));
   }
 
