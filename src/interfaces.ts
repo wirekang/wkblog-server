@@ -96,7 +96,7 @@ export interface Service{
 
   onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult>
   onCommentUpdate(hash:string, input:CommentUpdateInput): Promise<ServiceResult>
-  onCommentRead(postId:Post['id']): Promise<ServiceResult>
+  onCommentsRead(postId:Post['id']): Promise<ServiceResult>
   onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult>
 }
 
