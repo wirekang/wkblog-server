@@ -4,10 +4,10 @@ import DAO from 'db';
 import { CommentInput, PostInput, PostUpdateInput } from 'interfaces';
 
 describe('DB', () => {
-  Config.parse('.config');
+  Config.parse('.test-config');
   const dao = new DAO();
   it('connect', async () => {
-    await dao.connect(Object.assign(Config, { database: 'test' }));
+    await dao.connect(Config);
   });
 
   let pid = 0;
@@ -56,17 +56,25 @@ describe('DB', () => {
   });
 
   it('댓글 생성 및 읽기', async () => {
-    const input:CommentInput = {
-      name: 'se',
-      postId: pid,
-      text: 'as',
-      password: 'vc',
-      parentId: null,
-    };
-    const cid = await dao.createComment(input);
+    const createComment = (
+      postId:number, parentId: number | null,
+    ) => dao.createComment({
+      name: 'thisiname',
+      text: 'thisistext',
+      password: 'pwd',
+      parentId,
+      postId,
+    }, false);
+    const c1 = await createComment(pid, null);
+    const c2 = await createComment(pid, null);
+    const c11 = await createComment(pid, c1);
+    const c12 = await createComment(pid, c1);
+    const c121 = await createComment(pid, c12);
+    const c122 = await createComment(pid, c12);
+
     const comments = await dao.readComments(pid);
-    expect(comments.length).toBe(1);
-    expect(comments[0].id).toBe(cid);
+    expect(comments.length).toBe(6);
+    expect(comments[0].id).toBe(c1);
 
     const post = await dao.readPost(pid, true);
     expect(post.comments).toEqual(comments);
@@ -117,6 +125,23 @@ describe('DB', () => {
     } catch (e) {
       console.log(e);
     }
+  });
+
+  it('admin 댓글', async () => {
+    const undef = undefined as any;
+    const cid = await dao.createComment({
+      name: undef,
+      parentId: null,
+      postId: 3,
+      password: undef,
+      text: 'I am admin',
+    }, true);
+
+    await dao.updateComment({
+      id: cid, text: 'I am GOD', password: undef,
+    }, true);
+
+    await dao.deleteComment({ id: cid, password: undef }, true);
   });
 
   it('닫기', async () => {

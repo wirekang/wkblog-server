@@ -56,9 +56,12 @@
     "start": "kill-port 9229 &&NODE_PATH=./src node -r ts-node/register src/index.ts ./example",
     "debug": "NODE_PATH=./src nodemon --watch src --delay 2 --exec node -r ts-node/register --inspect src/index.ts ./example",
     "build": "NODE_ENV=production npx webpack --mode production --progress",
-    "test": "jest --runInBand ./src",
-    "test:db": "jest --runInBand ./src/db",
-    "test:server": "jest --runInBand ./src/server"
+    "test": "jest --runInBand ./src/test/",
+    "test:db": "jest --runInBand ./src/test/db.test.ts",
+    "test:service": "jest --runInBand ./src/test/service.test.ts",
+    "test:server": "jest --runInBand ./src/test/server.test.ts",
+    "test:auth": "jest --runInBand ./src/test/auth.test.ts",
+    "test:filter": "jest --runInBand ./src/test/filter.test.ts"
   },
   "dependencies": {
     "escape-html": "^1.0.3",

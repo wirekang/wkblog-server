@@ -2,13 +2,13 @@ import {
   Auth,
   CommentDeleteInput,
   CommentInput, CommentUpdateInput, DAO, Filter, PostInput, PostUpdateInput,
-  Service as IService, ServiceResult,
+  Service, ServiceResult,
 } from 'interfaces';
 import { inject, injectable } from 'inversify';
 import TYPES from 'Types';
 
 @injectable()
-export default class Service implements IService {
+export default class MyService implements Service {
   @inject(TYPES.Filter) private filter!: Filter;
 
   @inject(TYPES.Auth) private auth!: Auth;
