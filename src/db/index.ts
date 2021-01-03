@@ -3,7 +3,7 @@ import {
 } from 'typeorm';
 import { injectable } from 'inversify';
 import {
-  Comment, CommentInput, CommentUpdateInput, DAO,
+  Comment, CommentDeleteInput, CommentInput, CommentUpdateInput, DAO,
   DBOption, Post, PostInput, PostSummary, PostUpdateInput,
 } from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'db/models';
