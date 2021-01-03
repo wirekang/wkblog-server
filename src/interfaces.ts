@@ -95,3 +95,12 @@ export interface DAO {
   deleteComment(id:Comment['id']): Promise<void>
 
 }
+
+export interface Filter {
+  ensureText(str: string): string
+}
+
+export interface Auth{
+  login(id:string, pw:string):string
+  validate(hash: string): boolean
+}
