@@ -19,14 +19,6 @@ export default class MyServer implements Server {
     this.app.use(this.router.allowedMethods());
     this.app.use(json({ pretty: false }));
     this.app.use(bodyParser({ enableTypes: ['json'] }));
-    this.router.get('/posts', async (ctx) => {
-      const { id } = ctx.request.query;
-      if (Number.isInteger(id)) {
-        ctx.body = await this.onReadPost(id);
-        return;
-      }
-      ctx.body = await this.onReadPosts();
-    });
   }
 
   async open(option:ServerOption):Promise<void> {
