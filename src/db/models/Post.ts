@@ -1,40 +1,39 @@
-import { getModelForClass, prop } from '@typegoose/typegoose';
-import { Comment } from 'db/models/Comment';
+import { randomInt } from 'crypto';
+import { TagModel, CommentModel } from 'db/models';
+import {
+  Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn,
+} from 'typeorm';
 
-export class Post {
-  @prop()
-  _id!: number;
+@Entity('post')
+export default class PostModel {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @prop({ trim: true, maxlength: 50 })
+  @Column()
   title!: string;
 
-  @prop({ trim: true, maxlength: 200 })
+  @Column()
   description!: string;
 
-  @prop({ type: String, trim: true, maxlength: 20 })
-  tags!: string[];
-
-  @prop({ trim: true, maxlength: 10000 })
+  @Column()
   html!: string;
 
-  @prop({ type: Comment, _id: false })
-  comments!: Comment[];
-
-  @prop()
+  @Column({ default: false })
   published!: boolean;
 
-  @prop()
-  createdAt!: number;
+  @Column({ type: 'bigint' })
+  whenCreated!: number;
 
-  @prop()
-  updatedAt!: number;
+  @Column({ type: 'bigint', default: 0 })
+  whenUpdated!: number;
 
-  @prop({ default: 0 })
-  publishedAt!: number;
+  @Column({ type: 'bigint' })
+  whenPublished!: number;
+
+  @ManyToMany(() => TagModel)
+  @JoinTable({})
+  tags!: TagModel[];
+
+  @OneToMany(() => CommentModel, (cm) => cm.post)
+  comments!: CommentModel[];
 }
-
-export default getModelForClass(Post, {
-  schemaOptions: {
-    versionKey: false,
-  },
-});

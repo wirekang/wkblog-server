@@ -1,25 +1,45 @@
-import { getModelForClass, prop } from '@typegoose/typegoose';
+import {
+  Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,
+} from 'typeorm';
+import { PostModel } from 'db/models';
 
-export class Comment {
-  @prop()
-  num!: number;
+@Entity('comment')
+export default class CommentModel {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @prop({ trim: true })
+  @Column()
   name!: string;
 
-  @prop()
+  @Column()
   passwordHash!: string;
 
-  @prop({ trim: true, maxlength: 1000 })
+  @Column()
   text!: string;
 
-  @prop()
-  createdAt!: number;
+  @Column({ default: false })
+  updated!: boolean;
 
-  @prop()
-  updatedAt!: number;
+  @Column({ type: 'bigint' })
+  whenCreated!: number;
+
+  @Column({ type: 'bigint', default: 0 })
+  whenUpdated!: number;
+
+  @Column({ nullable: true })
+  postId!: number;
+
+  @ManyToOne(() => PostModel, (pm) => pm.comments,
+    { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  post!: PostModel;
+
+  @Column({ nullable: true })
+  parentId!: number;
+
+  @ManyToOne(() => CommentModel, (cm) => cm.children,
+    { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  parent!: CommentModel;
+
+  @OneToMany(() => CommentModel, (cm) => cm.parent)
+  children!: CommentModel[];
 }
-
-export default getModelForClass(Comment, {
-  schemaOptions: { versionKey: false, _id: false },
-});
