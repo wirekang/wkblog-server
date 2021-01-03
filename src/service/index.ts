@@ -1,5 +1,6 @@
 import {
   Auth,
+  CommentDeleteInput,
   CommentInput, CommentUpdateInput, DAO, Filter, PostInput, PostUpdateInput,
   Service as IService, ServiceResult,
 } from 'interfaces';
@@ -50,80 +51,106 @@ export default class Service implements IService {
   async onPostRead(hash:string, id: number): Promise<ServiceResult> {
     const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-      this.auth.validate(hash);
-      await this.dao.readPost(id);
+      result.result = await this.dao.readPost(id, this.auth.isLogin(hash));
     } catch (e) {
       result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onPostCount(hash:string, tagId?: number): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onPostCount(hash:string, tagId?: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      result.result = await this.dao.readPostCount(
+        this.auth.isLogin(hash), tagId,
+      );
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onPostsRead(hash:string, tagId?: number): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onPostsRead(hash:string, offset:number, count:number,
+    tagId?: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      result.result = this.dao.readPosts(
+        offset, count, this.auth.isLogin(hash), tagId,
+      );
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onPostDelete(hash:string, id: number): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onPostDelete(hash:string, id: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      this.auth.validate(hash);
+      await this.dao.deletePost(id);
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onCommentCreate(input: CommentInput): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      result.result = await this.dao.createComment({
+        name: this.filter.escapeHTML(input.name),
+        parentId: input.parentId,
+        password: input.password,
+        postId: input.postId,
+        text: this.filter.escapeHTML(input.text),
+      }, this.auth.isLogin(hash));
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onCommentUpdate(input: CommentUpdateInput): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onCommentUpdate(hash:string, input: CommentUpdateInput): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      await this.dao.updateComment({
+        id: input.id,
+        password: input.password,
+        text: this.filter.escapeHTML(input.text),
+      }, this.auth.isLogin(hash));
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onCommentRead(postId: number): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onCommentsRead(postId: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      result.result = await this.dao.readComments(postId);
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
 
-  onCommentDelete(hash:string, id: number): Promise<ServiceResult> {
-    const result:ServiceResult;
+  async onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
     try {
-
+      await this.dao.deleteComment({
+        id: input.id,
+        password: input.password,
+      }, this.auth.isLogin(hash));
     } catch (e) {
-
+      result.ok = 0;
+      console.log(e);
     }
     return result;
   }
