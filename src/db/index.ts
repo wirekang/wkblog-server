@@ -12,8 +12,6 @@ import TYPES from 'Types';
 
 @injectable()
 export default class DB implements DAO {
-  @inject(TYPES.Auth) private auth!: Auth;
-
   @inject(TYPES.Filter) private filter!: Filter;
 
   private connection!:Connection;
