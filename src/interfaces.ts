@@ -83,9 +83,6 @@ export interface ServiceResult{
 }
 
 export interface Service{
-
-  init():Promise<void>
-
   onLogin(id:string, pw:string): Promise<ServiceResult>
 
   onPostCreate(input: PostInput): Promise<ServiceResult>
