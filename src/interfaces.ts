@@ -39,9 +39,7 @@ export interface Comment{
   id: number
   postId: Post['id']
   parentId: Comment['id']
-  childrenIds: Comment['id'][]
   name: string
-  password: string
   text: string
   updated: boolean
   whenCreated: number
@@ -52,19 +50,19 @@ export interface CommentInput{
   postId: Post['id']
   parentId: Comment['id'] | null,
   name: Comment['name']
-  password: Comment['password']
+  password: string
   text: Comment['text']
 }
 
 export interface CommentUpdateInput{
   id: Comment['id']
-  password: Comment['password']
+  password: string
   text: Comment['text']
 }
 
 export interface CommentDeleteInput{
   id: Comment['id']
-  password: Comment['password']
+  password: string
 }
 
 export interface Tag{

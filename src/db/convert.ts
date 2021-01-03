@@ -27,11 +27,9 @@ export function toTag(tm:TagModel): Tag {
 
 export function toComment(cm:CommentModel): Comment {
   return {
-    childrenIds: cm.children ? cm.children.map((c) => c.id) : [],
     id: cm.id,
     name: cm.name,
     parentId: cm.parentId,
-    password: cm.password,
     postId: cm.postId,
     text: cm.text,
     whenCreated: cm.whenCreated,
