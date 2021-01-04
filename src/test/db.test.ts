@@ -144,7 +144,8 @@ describe('DB', () => {
 
   it('필터 없이 페이징', async () => {
     const pss = await dao.readPosts(0, 10, true);
-    console.log(pss);
+    expect(pss.length).toBe(10);
+    expect(pss[0].commentsCount).toBe(6);
   });
 
   it('태그 목록 확인', async () => {
@@ -157,51 +158,33 @@ describe('DB', () => {
     expect(tags.map((tag) => tag.name).sort()).toEqual(uniques.sort());
   });
 
-  // it('태그 필터 확인', async () => {
-  //   const tags = await dao.readTags();
-  //   const tag = tags[2];
-  //   const count = await dao.readPostCount(true, tag.id);
-  //   const pss = await dao.readPosts(0, count + 1, true, tag.id);
-  //   expect(count).toBe(pss.length);
-  // });
+  it('태그 필터 확인', async () => {
+    const tags = await dao.readTags();
+    const tag = tags[2];
+    const count = await dao.readPostCount(true, tag.id);
+    const pss = await dao.readPosts(0, count + 1, true, tag.id);
+    expect(count).toBe(pss.length);
+  });
 
-  //     const pageRecursive = async (
-  //       offset:number, count:number, max:number, tagId?:number,
-  //     ) => {
-  //       if (offset < max) {
-  //         print.push(`tag ${tagId || 'all'} ${offset} - ${offset + count}`);
-  //         const pss = await dao.readPosts(offset, count, true, tagId);
-  //         print.push(pss.map((ps) => ps.id).join(','));
-  //         await pageRecursive(offset + count, count, max, tagId);
-  //       }
-  //     };
-  //     await pageRecursive(0, 20, COUNT);
-  //     print.push('\n');
+  it('admin 댓글', async () => {
+    const undef = undefined as any;
+    const cid = await dao.createComment({
+      name: undef,
+      parentId: null,
+      postId: 3,
+      password: undef,
+      text: 'I am admin',
+    }, true);
 
-  //     const TAGID = 4;
-  //     const tagCount = await dao.readPostCount(true, TAGID);
-  //     await pageRecursive(0, 10, tagCount, TAGID);
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // });
+    await dao.updateComment({
+      id: cid, text: 'I am GOD', password: undef,
+    }, true);
 
-  // it('admin 댓글', async () => {
-  //   const undef = undefined as any;
-  //   const cid = await dao.createComment({
-  //     name: undef,
-  //     parentId: null,
-  //     postId: 3,
-  //     password: undef,
-  //     text: 'I am admin',
-  //   }, true);
+    const cms = await dao.readComments(3);
+    expect(cms.find((cm) => cm.id === cid)?.admin).toBeTruthy();
 
-  //   await dao.updateComment({
-  //     id: cid, text: 'I am GOD', password: undef,
-  //   }, true);
-
-  //   await dao.deleteComment({ id: cid, password: undef }, true);
-  // });
+    await dao.deleteComment({ id: cid, password: undef }, true);
+  });
 
   it('닫기', async () => {
     await dao.close();
