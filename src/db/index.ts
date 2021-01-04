@@ -106,7 +106,7 @@ export default class MyDAO implements DAO {
     const pm = await this.postRepo.findOne(id,
       {
         relations: ['comments', 'tags'],
-        where: admin ? {} : { published: true },
+        ...whereAdmin(admin),
       });
     if (!pm) {
       throw Error();
@@ -115,11 +115,9 @@ export default class MyDAO implements DAO {
   }
 
   async readPostCount(admin: boolean, tagId?:number): Promise<number> {
-    const count = await this.postRepo.createQueryBuilder('p')
-      .where(admin ? 'true' : 'p.published = 1')
-      .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
-      .leftJoinAndSelect('p.tags', 'tag')
-      .getCount();
+    const count = await this.postRepo.count({
+      ...whereAdminAndTag(admin, tagId),
+    });
     return count;
   }
 
@@ -209,4 +207,26 @@ export default class MyDAO implements DAO {
     const tms = await this.tagRepo.find();
     return tms.map((tm) => toTag(tm));
   }
+}
+
+function whereAdmin(admin: boolean) {
+  return admin ? {} : {
+    where: { published: true },
+  };
+}
+
+function whereTag(tagId?: number) {
+  return tagId ? { where: { tagId } } : {};
+}
+
+function whereAdminAndTag(admin:boolean, tagId?: number) {
+  return Object.assign(whereAdmin(admin), whereTag(tagId));
+}
+
+function orderPublished():{order:{whenPublished:'DESC'}} {
+  return {
+    order: {
+      whenPublished: 'DESC',
+    },
+  };
 }
