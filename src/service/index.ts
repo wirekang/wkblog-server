@@ -50,6 +50,30 @@ export default class MyService implements Service {
     return result;
   }
 
+  async onPostPublish(hash: string, id: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
+    try {
+      this.auth.validate(hash);
+      await this.dao.publishPost(id);
+    } catch (e) {
+      result.ok = 0;
+      console.log(e);
+    }
+    return result;
+  }
+
+  async onPoshHide(hash: string, id: number): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
+    try {
+      this.auth.validate(hash);
+      await this.dao.hidePost(id);
+    } catch (e) {
+      result.ok = 0;
+      console.log(e);
+    }
+    return result;
+  }
+
   async onPostRead(hash:string, id: number): Promise<ServiceResult> {
     const result = { ok: 1, result: 0 } as ServiceResult;
     try {
@@ -150,6 +174,17 @@ export default class MyService implements Service {
         id: input.id,
         password: input.password,
       }, this.auth.isLogin(hash));
+    } catch (e) {
+      result.ok = 0;
+      console.log(e);
+    }
+    return result;
+  }
+
+  async onTagsRead(): Promise<ServiceResult> {
+    const result = { ok: 1, result: 0 } as ServiceResult;
+    try {
+      result.result = await this.dao.readTags();
     } catch (e) {
       result.ok = 0;
       console.log(e);
