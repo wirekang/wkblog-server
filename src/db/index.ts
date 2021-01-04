@@ -123,25 +123,30 @@ export default class MyDAO implements DAO {
 
   async readPosts(offset: number, count: number, admin: boolean, tagId?: number)
   : Promise<PostSummary[]> {
-    const pms = await this.postRepo.createQueryBuilder('p')
-      .select(['p.id', 'p.title', 'p.description', 'p.whenPublished'])
-      .where(admin ? 'true' : 'p.published = 1')
-      .andWhere(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
-      .leftJoinAndSelect('p.tags', 'tag')
-      .orderBy('p.whenPublished', 'DESC')
-      .skip(offset)
-      .take(count)
-      .getMany();
-    return pms.map((pm) => (
-      {
-        id: pm.id,
-        title: pm.title,
-        whenPublished: pm.whenPublished,
-        description: pm.description,
-        tags: pm.tags.map((t) => toTag(t)),
-        commentsCount: 0,
-      }
-    ));
+    const pms = await this.postRepo.find({
+      ...whereAdminAndTag(admin, tagId),
+      ...orderPublished(),
+      relations: ['tags'],
+      skip: offset,
+      take: count,
+    });
+
+    const raws = await this.commentRepo.createQueryBuilder('cmt')
+      .select('cmt.postId')
+      .addSelect('count(*)', 'count')
+      .groupBy('cmt.postId')
+      .getRawMany();
+
+    return pms.map((pm) => ({
+      id: pm.id,
+      title: pm.title,
+      description: pm.description,
+      tags: pm.tags.map((t) => toTag(t)),
+      whenPublished: pm.whenPublished,
+      commentsCount: raws.find(
+        (raw) => raw.cmt_postId === pm.id,
+      )?.count as number || 0,
+    }));
   }
 
   async deletePost(id: number): Promise<void> {
