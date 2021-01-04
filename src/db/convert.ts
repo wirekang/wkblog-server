@@ -35,5 +35,6 @@ export function toComment(cm:CommentModel): Comment {
     whenCreated: cm.whenCreated,
     whenUpdated: cm.whenUpdated,
     updated: cm.updated,
+    admin: cm.admin,
   };
 }

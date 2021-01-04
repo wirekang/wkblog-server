@@ -39,6 +39,7 @@ export interface Comment{
   id: number
   postId: Post['id']
   parentId: Comment['id'] | null
+  admin: boolean
   name: string
   text: string
   updated: boolean
