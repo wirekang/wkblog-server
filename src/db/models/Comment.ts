@@ -29,7 +29,7 @@ export default class CommentModel {
   @Column({ type: 'bigint', default: 0 })
   whenUpdated!: number;
 
-  @Column({ nullable: true })
+  @Column()
   postId!: number;
 
   @ManyToOne(() => PostModel, (pm) => pm.comments,
