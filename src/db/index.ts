@@ -1,5 +1,5 @@
 import {
-  createConnection, Connection, Repository, getConnection,
+  createConnection, Connection, Repository, getConnection, SelectQueryBuilder,
 } from 'typeorm';
 import { injectable } from 'inversify';
 import {
@@ -102,34 +102,33 @@ export default class MyDAO implements DAO {
     }
   }
 
+  private selectPostTag(admin:boolean, tagId?: number) {
+    return this.postRepo.createQueryBuilder('post')
+      .leftJoinAndSelect('post.tags', 'tag')
+      .where(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
+      .andWhere(admin ? 'true' : 'post.published = 1');
+  }
+
   async readPost(id: number, admin: boolean): Promise<Post> {
-    const pm = await this.postRepo.findOne(id,
-      {
-        relations: ['comments', 'tags'],
-        ...whereAdmin(admin),
-      });
-    if (!pm) {
-      throw Error();
-    }
-    return toPost(pm);
+    return toPost(
+      await this.selectPostTag(admin)
+        .andWhere('post.id = :id', { id })
+        .leftJoinAndSelect('post.comments', 'comment')
+        .getOneOrFail(),
+    );
   }
 
   async readPostCount(admin: boolean, tagId?:number): Promise<number> {
-    const count = await this.postRepo.count({
-      ...whereAdminAndTag(admin, tagId),
-    });
-    return count;
+    return this.selectPostTag(admin, tagId)
+      .getCount();
   }
 
   async readPosts(offset: number, count: number, admin: boolean, tagId?: number)
   : Promise<PostSummary[]> {
-    const pms = await this.postRepo.find({
-      ...whereAdminAndTag(admin, tagId),
-      ...orderPublished(),
-      relations: ['tags'],
-      skip: offset,
-      take: count,
-    });
+    const pms = await this.selectPostTag(admin, tagId)
+      .skip(offset)
+      .take(count)
+      .getMany();
 
     const raws = await this.commentRepo.createQueryBuilder('cmt')
       .select('cmt.postId')
@@ -143,9 +142,9 @@ export default class MyDAO implements DAO {
       description: pm.description,
       tags: pm.tags.map((t) => toTag(t)),
       whenPublished: pm.whenPublished,
-      commentsCount: raws.find(
+      commentsCount: Number(raws.find(
         (raw) => raw.cmt_postId === pm.id,
-      )?.count as number || 0,
+      )?.count || 0),
     }));
   }
 
@@ -217,26 +216,4 @@ export default class MyDAO implements DAO {
     const tms = await this.tagRepo.find();
     return tms.map((tm) => toTag(tm));
   }
-}
-
-function whereAdmin(admin: boolean) {
-  return admin ? {} : {
-    where: { published: true },
-  };
-}
-
-function whereTag(tagId?: number) {
-  return tagId ? { where: { tagId } } : {};
-}
-
-function whereAdminAndTag(admin:boolean, tagId?: number) {
-  return Object.assign(whereAdmin(admin), whereTag(tagId));
-}
-
-function orderPublished():{order:{whenPublished:'DESC'}} {
-  return {
-    order: {
-      whenPublished: 'DESC',
-    },
-  };
 }
