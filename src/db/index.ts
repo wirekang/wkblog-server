@@ -166,7 +166,9 @@ export default class MyDAO implements DAO {
   }
 
   async updateComment(input: CommentUpdateInput, admin: boolean): Promise<void> {
-    const cm = await this.commentRepo.findOne(input.id, { select: ['admin', 'password'] });
+    const cm = await this.commentRepo.findOne(input.id, {
+      select: ['admin', 'password'],
+    });
     if (!cm) {
       throw Error();
     }
@@ -185,12 +187,15 @@ export default class MyDAO implements DAO {
   }
 
   async readComments(postId: number): Promise<Comment[]> {
-    const cms = await this.commentRepo.find({ where: { postId }, order: { whenCreated: 'ASC' } });
+    const cms = await this.commentRepo.find(
+      { where: { postId }, order: { whenCreated: 'ASC' } },
+    );
     return cms.map((c) => toComment(c));
   }
 
   async deleteComment(input:CommentDeleteInput, admin: boolean): Promise<void> {
-    const cm = await this.commentRepo.findOne(input.id, { select: ['id', 'password', 'admin'] });
+    const cm = await this.commentRepo.findOne(input.id,
+      { select: ['id', 'password', 'admin'] });
     if (!cm) {
       throw Error();
     }
