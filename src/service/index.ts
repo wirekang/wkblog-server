@@ -11,8 +11,6 @@ enum Permission{
 
 @injectable()
 export default class MyService implements Service {
-  @inject(TYPES.Filter) private filter!: Filter;
-
   @inject(TYPES.Auth) private auth!: Auth;
 
   @inject(TYPES.DAO) private dao!: Dao;

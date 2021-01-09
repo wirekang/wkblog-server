@@ -1,12 +1,15 @@
 import {
   createConnection, Connection, Repository, getConnection,
 } from 'typeorm';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import * as I from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'dao/models';
+import TYPES from 'Types';
 
 @injectable()
 export default class MyDao implements I.Dao {
+  @inject(TYPES.Filter) private filter!:I.Filter;
+
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;
@@ -178,10 +181,10 @@ export default class MyDao implements I.Dao {
   private async createComment(input: I.CreateCommentInput, admin: boolean)
   : Promise<I.CreateCommentOutput> {
     const comment = await this.commentRepo.save({
-      name: admin ? '-' : input.name,
+      name: admin ? '-' : this.filter.commentName(input.name),
       password: admin ? '-' : input.password,
       admin,
-      text: input.text,
+      text: this.filter.html(input.text),
       postId: input.postId,
       parentId: input.parentId,
       whenCreated: Date.now(),
@@ -205,7 +208,7 @@ export default class MyDao implements I.Dao {
     }
     await this.commentRepo.save({
       id: input.id,
-      text: input.text,
+      text: this.filter.html(input.text),
       updated: true,
       whenUpdated: Date.now(),
     });

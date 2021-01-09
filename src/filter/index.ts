@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { Filter } from 'interfaces';
 import escapeHtml from 'escape-html';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class MyFilter implements Filter {
   badWord(str: string): string {
     return str;
