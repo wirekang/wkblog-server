@@ -1,8 +1,8 @@
 import {
-  Auth,
-  CommentDeleteInput,
-  CommentInput, CommentUpdateInput, DAO, Filter, PostInput, PostUpdateInput,
-  Service, ServiceResult,
+  Action,
+  ActionType,
+  Auth, DAO, Filter,
+  Service,
 } from 'interfaces';
 import { inject, injectable } from 'inversify';
 import TYPES from 'Types';
