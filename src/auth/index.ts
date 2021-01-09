@@ -44,4 +44,9 @@ export default class MyAuth implements Auth {
       return false;
     }
   }
+
+  logout(hash: string): void {
+    this.validate(hash);
+    this.hash = '';
+  }
 }

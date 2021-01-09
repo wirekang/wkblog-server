@@ -176,4 +176,5 @@ export interface Auth{
   login(id:string, pw:string):string
   validate(hash:string):void
   isLogin(hash:string):boolean
+  logout(hash: string): void
 }

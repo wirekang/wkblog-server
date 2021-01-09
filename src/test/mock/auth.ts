@@ -25,4 +25,8 @@ export default class AuthMock implements Auth {
       return false;
     }
   }
+
+  logout(hash: string): void {
+    const x = 1;
+  }
 }
