@@ -6,7 +6,6 @@ import TYPES from 'Types';
 
 enum Permission{
   Anyone,
-  Both,
   Admin,
 }
 
@@ -26,38 +25,18 @@ export default class MyService implements Service {
     this.permMap.set(ActionType.DeletePost, Permission.Admin);
     this.permMap.set(ActionType.PublishPost, Permission.Admin);
     this.permMap.set(ActionType.Logout, Permission.Admin);
-    this.permMap.set(ActionType.ReadPost, Permission.Both);
-    this.permMap.set(ActionType.ReadPosts, Permission.Both);
-    this.permMap.set(ActionType.CreateComment, Permission.Both);
-    this.permMap.set(ActionType.UpdateComment, Permission.Both);
   }
 
   private getPermission(type: ActionType): Permission {
     return this.permMap.get(type) || Permission.Anyone;
   }
 
-  async onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult> {
-    const result = { ok: 1, result: 0 } as ServiceResult;
-    try {
-      await this.dao.deleteComment({
-        id: input.id,
-        password: input.password,
-      }, this.auth.isLogin(hash));
-    } catch (e) {
-      result.ok = 0;
-      console.log(e);
+  do<A extends Action<ActionType, unknown, unknown>>(
+    type: A['type'], input: A['input'], hash: string,
+  ): Promise<A['output']> {
+    if (this.getPermission(type) === Permission.Admin) {
+      this.auth.validate(hash);
     }
-    return result;
-  }
-
-  async onTagsRead(): Promise<ServiceResult> {
-    const result = { ok: 1, result: 0 } as ServiceResult;
-    try {
-      result.result = await this.dao.readTags();
-    } catch (e) {
-      result.ok = 0;
-      console.log(e);
-    }
-    return result;
+    return this.dao.do(type, input, this.auth.isLogin(hash));
   }
 }
