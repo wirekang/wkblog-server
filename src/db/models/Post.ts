@@ -1,4 +1,3 @@
-import { randomInt } from 'crypto';
 import { TagModel, CommentModel } from 'db/models';
 import { Post } from 'interfaces';
 import {
