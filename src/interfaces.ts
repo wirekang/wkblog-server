@@ -103,15 +103,10 @@ export type DeleteComment = Action<'deleteComment', DeleteCommentInput, DeleteCo
 export type ReadTags = Action<'readTags', ReadTagsInput, ReadTagsOutput>;
 export type Login = Action<'login', LoginInput, LoginOutput>;
 
-export interface ServiceResult<A extends Action<ActionType, unknown, unknown>>{
-  ok: number
-  result: A['output']
-}
-
 export interface Service{
   do<A extends Action<ActionType, unknown, unknown>>(
     type:A['type'], input: A['input'], hash: string
-    ): Promise<ServiceResult<A>>
+    ): Promise<A>
 }
 
 export interface DBOption{
