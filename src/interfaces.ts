@@ -80,28 +80,53 @@ export type ReadTagsOutput= Tag[];
 export type LoginInput = {id:string, pw: string};
 export type LoginOutput = {hash: string};
 
-export type ActionType = 'createPost' | 'readPost' | 'readPosts' | 'updatePost' |
-'deletePost' | 'publishPost' | 'countPosts' | 'createComment' | 'readComments' |
-'updateComment' | 'deleteComment' | 'readTags' | 'login';
+export enum ActionType{
+  CreatePost,
+  ReadPost,
+  ReadPosts,
+  UpdatePost,
+  DeletePost,
+  PublishPost,
+  CountPosts,
+  CreateComment,
+  ReadComments,
+  UpdateComment,
+  DeleteComment,
+  ReadTags,
+  Login,
+}
 
 export type Action<type extends ActionType, I, O> = {
   type: type
   input: I
   output: O
 };
-export type CreatePost = Action<'createPost', CreatePostInput, CreatePostOutput>;
-export type ReadPost = Action<'readPost', ReadPostInput, ReadPostOutput>;
-export type ReadPosts = Action<'readPosts', ReadPostsInput, ReadPostsOutput>;
-export type UpdatePost = Action<'updatePost', UpdatePostInput, UpdatePostOutput>;
-export type DeletePost = Action<'deletePost', DeletePostInput, DeletePostOutput>;
-export type PublishPost = Action<'publishPost', PublishPostInput, PublishPostOutput>;
-export type CountPosts = Action<'countPosts', CountPostsInput, CountPostsOutput>;
-export type CreateComment = Action<'createComment', CreateCommentInput, CreateCommentOutput>;
-export type ReadComments = Action<'readComments', ReadCommentsInput, ReadCommentsOutput>;
-export type UpdateComment = Action<'updateComment', UpdateCommentInput, UpdateCommentOutput>;
-export type DeleteComment = Action<'deleteComment', DeleteCommentInput, DeleteCommentOutput>;
-export type ReadTags = Action<'readTags', ReadTagsInput, ReadTagsOutput>;
-export type Login = Action<'login', LoginInput, LoginOutput>;
+export type CreatePost = Action<ActionType.CreatePost,
+ CreatePostInput, CreatePostOutput>;
+export type ReadPost = Action<ActionType.ReadPost,
+ ReadPostInput, ReadPostOutput>;
+export type ReadPosts = Action<ActionType.ReadPosts,
+ ReadPostsInput, ReadPostsOutput>;
+export type UpdatePost = Action<ActionType.UpdatePost,
+ UpdatePostInput, UpdatePostOutput>;
+export type DeletePost = Action<ActionType.DeletePost,
+ DeletePostInput, DeletePostOutput>;
+export type PublishPost = Action<ActionType.PublishPost,
+ PublishPostInput, PublishPostOutput>;
+export type CountPosts = Action<ActionType.CountPosts,
+ CountPostsInput, CountPostsOutput>;
+export type CreateComment = Action<ActionType.CreateComment,
+ CreateCommentInput, CreateCommentOutput>;
+export type ReadComments = Action<ActionType.ReadComments,
+ ReadCommentsInput, ReadCommentsOutput>;
+export type UpdateComment = Action<ActionType.UpdateComment,
+UpdateCommentInput, UpdateCommentOutput>;
+export type DeleteComment = Action<ActionType.DeleteComment,
+ DeleteCommentInput, DeleteCommentOutput>;
+export type ReadTags = Action<ActionType.ReadTags,
+ ReadTagsInput, ReadTagsOutput>;
+export type Login = Action<ActionType.Login,
+LoginInput, LoginOutput>;
 
 export interface Service{
   do<A extends Action<ActionType, unknown, unknown>>(
