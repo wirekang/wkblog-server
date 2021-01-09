@@ -27,10 +27,10 @@ export type CreatePostInput = Pick<Post,
 export type CreatePostOutput = PostIdOnly;
 
 export type ReadPostInput = IdOnly;
-export type ReadPostOutput = Post;
+export type ReadPostOutput = {post: Post};
 
 export type ReadPostsInput = TagIdOnly & { offset: number, count: number };
-export type ReadPostsOutput = PostSummary[];
+export type ReadPostsOutput = {postSummaries: PostSummary[]};
 
 export type UpdatePostInput = IdOnly & CreatePostInput;
 export type UpdatePostOutput = Nothing;
@@ -61,7 +61,7 @@ export type CreateCommentInput = Pick<Comment,
 export type CreateCommentOutput = CommentIdOnly;
 
 export type ReadCommentsInput = PostIdOnly;
-export type ReadCommentsOutput = Comment[];
+export type ReadCommentsOutput = {comments: Comment[]};
 
 export type UpdateCommentInput = Pick<Comment,
 'id' | 'text'> & PasswordOnly;
@@ -76,7 +76,7 @@ export interface Tag{
 }
 
 export type ReadTagsInput = Nothing;
-export type ReadTagsOutput= Tag[];
+export type ReadTagsOutput= {tags: Tag[]};
 
 export type LoginInput = {id:string, pw: string};
 export type LoginOutput = {hash: string};

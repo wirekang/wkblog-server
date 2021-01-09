@@ -128,20 +128,19 @@ export default class MyDao implements I.Dao {
       .andWhere(admin ? 'true' : 'post.published = 1');
   }
 
-  private readPost(input:I.ReadPostInput, admin: boolean)
+  private async readPost(input:I.ReadPostInput, admin: boolean)
   : Promise<I.ReadPostOutput> {
-    return this.selectPostTag(admin)
+    const post = await this.selectPostTag(admin)
       .andWhere('post.id = :id', { id: input.id })
       .leftJoinAndSelect('post.comments', 'comment')
       .getOneOrFail();
+    return { post };
   }
 
   private async countPosts(input:I.CountPostsInput, admin: boolean)
   : Promise<I.CountPostsOutput> {
-    return {
-      postsCount: await this.selectPostTag(admin, input.tagId)
-        .getCount(),
-    };
+    const postsCount = await this.selectPostTag(admin, input.tagId).getCount();
+    return { postsCount };
   }
 
   private async readPosts(input:I.ReadPostsInput, admin: boolean)
@@ -156,8 +155,7 @@ export default class MyDao implements I.Dao {
       .addSelect('count(*)', 'count')
       .groupBy('cmt.postId')
       .getRawMany();
-
-    return pms.map((pm) => ({
+    const postSummaries = await pms.map((pm) => ({
       id: pm.id,
       title: pm.title,
       description: pm.description,
@@ -167,6 +165,7 @@ export default class MyDao implements I.Dao {
         (raw) => raw.cmt_postId === pm.id,
       )?.count || 0),
     }));
+    return { postSummaries };
   }
 
   private async deletePost(input: I.DeletePostInput): Promise<I.DeletePostOutput> {
@@ -219,7 +218,7 @@ export default class MyDao implements I.Dao {
     const comments = await this.commentRepo.find(
       { where: { postId: input.postId }, order: { whenCreated: 'ASC' } },
     );
-    return comments;
+    return { comments };
   }
 
   private async deleteComment(input:I.DeleteCommentInput, admin: boolean)
