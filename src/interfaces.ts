@@ -178,3 +178,13 @@ export interface Auth{
   isLogin(hash:string):boolean
   logout(hash: string): void
 }
+
+export interface LimiterOption{
+  max: number
+  delay: number
+}
+
+export interface Limiter{
+  init(option: LimiterOption):void
+  validate(ip:string):void
+}

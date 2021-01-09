@@ -4,5 +4,6 @@ const TYPES = {
   Server: Symbol.for('Server'),
   Auth: Symbol.for('Auth'),
   Service: Symbol.for('Service'),
+  Limiter: Symbol.for('Limiter'),
 };
 export default TYPES;

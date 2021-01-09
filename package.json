@@ -61,7 +61,8 @@
     "test:service": "jest --runInBand ./src/test/service.test.ts",
     "test:server": "jest --runInBand ./src/test/server.test.ts",
     "test:auth": "jest --runInBand ./src/test/auth.test.ts",
-    "test:filter": "jest --runInBand ./src/test/filter.test.ts"
+    "test:filter": "jest --runInBand ./src/test/filter.test.ts",
+    "test:limiter": "jest --runInBand ./src/test/limiter.test.ts"
   },
   "dependencies": {
     "escape-html": "^1.0.3",
