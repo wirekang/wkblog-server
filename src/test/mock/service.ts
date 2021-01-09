@@ -7,6 +7,6 @@ export default class ServiceMock implements Service {
   do<A extends Action<ActionType, unknown, unknown>>(
     type: A['type'], input: A['input'], hash: string,
   ): Promise<A['output']> {
-    return true as any;
+    return { type, input } as any;
   }
 }

@@ -19,6 +19,6 @@ export default class DaoMock implements Dao {
   do<A extends Action<ActionType, unknown, unknown>>(
     type: A['type'], input: A['input'], admin: boolean,
   ): Promise<A['output']> {
-    throw new Error('Method not implemented.');
+    return { type, input } as any;
   }
 }
