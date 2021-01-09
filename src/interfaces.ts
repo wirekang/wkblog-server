@@ -80,7 +80,7 @@ export type ReadTagsOutput= Tag[];
 export type LoginInput = {id:string, pw: string};
 export type LoginOutput = {hash: string};
 
-type ActionType = 'createPost' | 'readPost' | 'readPosts' | 'updatePost' |
+export type ActionType = 'createPost' | 'readPost' | 'readPosts' | 'updatePost' |
 'deletePost' | 'publishPost' | 'countPosts' | 'createComment' | 'readComments' |
 'updateComment' | 'deleteComment' | 'readTags' | 'login';
 
