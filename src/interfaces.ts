@@ -80,6 +80,8 @@ export type ReadTagsOutput= Tag[];
 
 export type LoginInput = {id:string, pw: string};
 export type LoginOutput = {hash: string};
+export type LogoutInput = Empty;
+export type LogoutOutput = Empty;
 
 export enum ActionType{
   CreatePost,
@@ -95,6 +97,7 @@ export enum ActionType{
   DeleteComment,
   ReadTags,
   Login,
+  Logout,
 }
 
 export type Action<type extends ActionType, I, O> = {
@@ -127,7 +130,9 @@ export type DeleteComment = Action<ActionType.DeleteComment,
 export type ReadTags = Action<ActionType.ReadTags,
  ReadTagsInput, ReadTagsOutput>;
 export type Login = Action<ActionType.Login,
-LoginInput, LoginOutput>;
+ LoginInput, LoginOutput>;
+export type Logout = Action<ActionType.Logout,
+ LogoutInput, LogoutOutput>;
 
 export interface Service{
   do<A extends Action<ActionType, unknown, unknown>>(
