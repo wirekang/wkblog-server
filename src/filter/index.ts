@@ -3,11 +3,15 @@ import { Filter } from 'interfaces';
 import escapeHtml from 'escape-html';
 
 export default class MyFilter implements Filter {
-  escapeHTML(text: string): string {
-    return escapeHtml(this.filter(text));
+  badWord(str: string): string {
+    return str;
   }
 
-  filter(text: string): string {
-    return text.trim().replaceAll('wirekang', '');
+  html(str: string): string {
+    return escapeHtml(this.badWord(str));
+  }
+
+  commentName(str: string): string {
+    return this.html(str).replaceAll('wirekang', '');
   }
 }
