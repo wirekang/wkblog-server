@@ -1,16 +1,12 @@
 import {
-  createConnection, Connection, Repository, getConnection, SelectQueryBuilder,
+  createConnection, Connection, Repository, getConnection,
 } from 'typeorm';
 import { injectable } from 'inversify';
-import {
-  Comment, CommentDeleteInput, CommentInput, CommentUpdateInput, DAO,
-  DBOption, Post, PostInput, PostSummary, PostUpdateInput, Tag,
-} from 'interfaces';
+import * as I from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'db/models';
-import { toComment, toPost, toTag } from 'db/convert';
 
 @injectable()
-export default class MyDAO implements DAO {
+export default class MyDAO implements I.DAO {
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;
@@ -19,7 +15,29 @@ export default class MyDAO implements DAO {
 
   private commentRepo!:Repository<CommentModel>;
 
-  async connect(option: DBOption): Promise<void> {
+  private doMap!: Map<I.ActionType, any>;
+
+  constructor() {
+    this.doMap = new Map();
+    this.doMap.set(I.ActionType.CreatePost, this.createPost);
+    this.doMap.set(I.ActionType.UpdatePost, this.updatePost);
+    this.doMap.set(I.ActionType.ReadPost, this.readPosts);
+    this.doMap.set(I.ActionType.ReadPosts, this.readPosts);
+    this.doMap.set(I.ActionType.DeletePost, this.deletePost);
+    this.doMap.set(I.ActionType.PublishPost, this.publishPost);
+    this.doMap.set(I.ActionType.CountPosts, this.countPosts);
+    this.doMap.set(I.ActionType.CreateComment, this.createComment);
+    this.doMap.set(I.ActionType.UpdateComment, this.updateComment);
+    this.doMap.set(I.ActionType.ReadComments, this.readComments);
+    this.doMap.set(I.ActionType.DeleteComment, this.deleteComment);
+    this.doMap.set(I.ActionType.ReadTags, this.readTags);
+  }
+
+  private getDo(type:I.ActionType): any {
+    return this.doMap.get(type);
+  }
+
+  async connect(option: I.DBOption): Promise<void> {
     await createConnection({
       type: 'mariadb',
       ...option,
@@ -34,6 +52,12 @@ export default class MyDAO implements DAO {
 
   async close(): Promise<void> {
     await this.connection.close();
+  }
+
+  do<A extends I.Action<I.ActionType, unknown, unknown>>(
+    type: A['type'], input: A['input'], admin: boolean,
+  ): Promise<A['output']> {
+    return this.getDo(type)(input, admin);
   }
 
   private async validateTags(tagNames: string[]):Promise<TagModel[]> {
@@ -55,9 +79,9 @@ export default class MyDAO implements DAO {
     return result;
   }
 
-  async createPost(input: PostInput): Promise<number> {
+  private async createPost(input: I.CreatePostInput): Promise<I.CreatePostOutput> {
     const tags = await this.validateTags(input.tagNames);
-    const pm = await this.postRepo.save({
+    const post = await this.postRepo.save({
       title: input.title,
       description: input.description,
       html: input.html,
@@ -65,16 +89,16 @@ export default class MyDAO implements DAO {
       whenCreated: Date.now(),
       whenPublished: Date.now() * 2,
     });
-    return pm.id;
+    return { postId: post.id };
   }
 
-  async updatePost(input: PostUpdateInput): Promise<void> {
+  private async updatePost(input: I.UpdatePostInput): Promise<I.UpdatePostOutput> {
     const count = await this.postRepo.count({ id: input.id });
     if (!count) {
       throw Error();
     }
     const tags = await this.validateTags(input.tagNames);
-    await this.postRepo.save({
+    const post = await this.postRepo.save({
       id: input.id,
       title: input.title,
       description: input.description,
@@ -82,24 +106,16 @@ export default class MyDAO implements DAO {
       tags,
       whenUpdated: Date.now(),
     });
+    return null;
   }
 
-  async publishPost(id: number): Promise<void> {
+  private async publishPost(input: I.PublishPostInput): Promise<I.PublishPostOutput> {
     await this.postRepo.save({
-      id,
-      published: true,
-      whenPublished: Date.now(),
+      id: input.id,
+      published: input.published,
+      whenPublished: Date.now() * (input.published ? 1 : 2),
     });
-  }
-
-  async hidePost(id: number): Promise<void> {
-    const res = await this.postRepo.update({ id }, {
-      published: false,
-      whenPublished: Date.now() * 2,
-    });
-    if (!res.affected) {
-      throw Error();
-    }
+    return null;
   }
 
   private selectPostTag(admin:boolean, tagId?: number) {
@@ -109,25 +125,27 @@ export default class MyDAO implements DAO {
       .andWhere(admin ? 'true' : 'post.published = 1');
   }
 
-  async readPost(id: number, admin: boolean): Promise<Post> {
-    return toPost(
-      await this.selectPostTag(admin)
-        .andWhere('post.id = :id', { id })
-        .leftJoinAndSelect('post.comments', 'comment')
-        .getOneOrFail(),
-    );
+  private readPost(input:I.ReadPostInput, admin: boolean)
+  : Promise<I.ReadPostOutput> {
+    return this.selectPostTag(admin)
+      .andWhere('post.id = :id', { id: input.id })
+      .leftJoinAndSelect('post.comments', 'comment')
+      .getOneOrFail();
   }
 
-  async readPostCount(admin: boolean, tagId?:number): Promise<number> {
-    return this.selectPostTag(admin, tagId)
-      .getCount();
+  private async countPosts(input:I.CountPostsInput, admin: boolean)
+  : Promise<I.CountPostsOutput> {
+    return {
+      postsCount: await this.selectPostTag(admin, input.tagId)
+        .getCount(),
+    };
   }
 
-  async readPosts(offset: number, count: number, admin: boolean, tagId?: number)
-  : Promise<PostSummary[]> {
-    const pms = await this.selectPostTag(admin, tagId)
-      .skip(offset)
-      .take(count)
+  private async readPosts(input:I.ReadPostsInput, admin: boolean)
+  : Promise<I.ReadPostsOutput> {
+    const pms = await this.selectPostTag(admin, input.tagId)
+      .skip(input.offset)
+      .take(input.count)
       .getMany();
 
     const raws = await this.commentRepo.createQueryBuilder('cmt')
@@ -140,7 +158,7 @@ export default class MyDAO implements DAO {
       id: pm.id,
       title: pm.title,
       description: pm.description,
-      tags: pm.tags.map((t) => toTag(t)),
+      tags: pm.tags,
       whenPublished: pm.whenPublished,
       commentsCount: Number(raws.find(
         (raw) => raw.cmt_postId === pm.id,
@@ -148,16 +166,18 @@ export default class MyDAO implements DAO {
     }));
   }
 
-  async deletePost(id: number): Promise<void> {
-    const pm = await this.postRepo.findOne(id);
-    if (!pm) {
+  private async deletePost(input: I.DeletePostInput): Promise<I.DeletePostOutput> {
+    const post = await this.postRepo.findOne(input.id);
+    if (!post) {
       throw Error();
     }
-    await this.postRepo.remove(pm);
+    await this.postRepo.remove(post);
+    return null;
   }
 
-  async createComment(input: CommentInput, admin: boolean): Promise<number> {
-    const cm = await this.commentRepo.save({
+  private async createComment(input: I.CreateCommentInput, admin: boolean)
+  : Promise<I.CreateCommentOutput> {
+    const comment = await this.commentRepo.save({
       name: admin ? '-' : input.name,
       password: admin ? '-' : input.password,
       admin,
@@ -166,10 +186,11 @@ export default class MyDAO implements DAO {
       parentId: input.parentId,
       whenCreated: Date.now(),
     });
-    return cm.id;
+    return { commentId: comment.id };
   }
 
-  async updateComment(input: CommentUpdateInput, admin: boolean): Promise<void> {
+  private async updateComment(input: I.UpdateCommentInput, admin: boolean)
+  : Promise<I.UpdateCommentOutput> {
     const cm = await this.commentRepo.findOne(input.id, {
       select: ['admin', 'password'],
     });
@@ -188,16 +209,18 @@ export default class MyDAO implements DAO {
       updated: true,
       whenUpdated: Date.now(),
     });
+    return null;
   }
 
-  async readComments(postId: number): Promise<Comment[]> {
-    const cms = await this.commentRepo.find(
-      { where: { postId }, order: { whenCreated: 'ASC' } },
+  private async readComments(input:I.ReadCommentsInput): Promise<I.ReadCommentsOutput> {
+    const comments = await this.commentRepo.find(
+      { where: { postId: input.postId }, order: { whenCreated: 'ASC' } },
     );
-    return cms.map((c) => toComment(c));
+    return comments;
   }
 
-  async deleteComment(input:CommentDeleteInput, admin: boolean): Promise<void> {
+  private async deleteComment(input:I.DeleteCommentInput, admin: boolean)
+  : Promise<I.DeleteCommentOutput> {
     const cm = await this.commentRepo.findOne(input.id,
       { select: ['id', 'password', 'admin'] });
     if (!cm) {
@@ -210,10 +233,10 @@ export default class MyDAO implements DAO {
       throw Error();
     }
     await this.commentRepo.remove(cm);
+    return null;
   }
 
-  async readTags(): Promise<Tag[]> {
-    const tms = await this.tagRepo.find();
-    return tms.map((tm) => toTag(tm));
+  private readTags(): Promise<I.Tag[]> {
+    return this.tagRepo.find();
   }
 }
