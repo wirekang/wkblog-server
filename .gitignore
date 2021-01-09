@@ -1,5 +1,5 @@
 node_modules/
 dist/
-.config
-.test-config
+.config.json
+.config.test.json
 example/
