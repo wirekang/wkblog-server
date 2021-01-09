@@ -3,9 +3,11 @@
 import 'reflect-metadata';
 import Config from 'Config';
 import {
+  Action,
+  ActionType,
   Auth,
   Comment, CommentDeleteInput, CommentInput,
-  CommentUpdateInput, DAO, DBOption, Filter, Post, PostInput,
+  CommentUpdateInput, Dao, DBOption, Filter, Post, PostInput,
   PostSummary, PostUpdateInput, Service,
 } from 'interfaces';
 import { Container, injectable } from 'inversify';
@@ -97,12 +99,12 @@ describe('서비스', () => {
   Config.parse('.test-config');
   const container = new Container();
   container.bind<Service>(TYPES.Service).to(MyService);
-  container.bind<DAO>(TYPES.DAO).to(DAO4Test);
+  container.bind<Dao>(TYPES.Dao).to(DAO4Test);
   container.bind<Auth>(TYPES.Auth).to(Auth4Test);
   container.bind<Filter>(TYPES.Filter).to(Filter4Test);
 
   const service = container.get<Service>(TYPES.Service);
-  const dao = container.get<DAO>(TYPES.DAO);
+  const dao = container.get<Dao>(TYPES.Dao);
   const auth = container.get<Auth>(TYPES.Auth);
   const filter = container.get<Filter>(TYPES.Filter);
 

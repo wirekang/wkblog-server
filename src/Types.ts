@@ -1,5 +1,5 @@
 const TYPES = {
-  DAO: Symbol.for('DAO'),
+  Dao: Symbol.for('Dao'),
   Filter: Symbol.for('Filter'),
   Server: Symbol.for('Server'),
   Auth: Symbol.for('Auth'),
