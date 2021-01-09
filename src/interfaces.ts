@@ -152,7 +152,7 @@ export interface Dao {
   connect(option: DBOption): Promise<void>
   close(): Promise<void>
   do<A extends Action<ActionType, unknown, unknown>>(
-    type:A['type'], input: A['input'], admin: boolean
+    type:A['type'], input: A['input'], admin?: boolean
     ): Promise<A['output']>
 }
 
