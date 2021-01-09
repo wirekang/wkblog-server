@@ -3,10 +3,10 @@ import {
 } from 'typeorm';
 import { injectable } from 'inversify';
 import * as I from 'interfaces';
-import { CommentModel, PostModel, TagModel } from 'db/models';
+import { CommentModel, PostModel, TagModel } from 'dao/models';
 
 @injectable()
-export default class MyDAO implements I.DAO {
+export default class MyDao implements I.Dao {
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;

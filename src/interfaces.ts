@@ -148,7 +148,7 @@ export interface DBOption{
   database: string,
 }
 
-export interface DAO {
+export interface Dao {
   connect(option: DBOption): Promise<void>
   close(): Promise<void>
   do<A extends Action<ActionType, unknown, unknown>>(

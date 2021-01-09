@@ -1,4 +1,4 @@
-import { TagModel, CommentModel } from 'db/models';
+import { TagModel, CommentModel } from 'dao/models';
 import { Post } from 'interfaces';
 import {
   Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn,

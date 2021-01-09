@@ -1,7 +1,7 @@
 import {
   Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,
 } from 'typeorm';
-import { PostModel } from 'db/models';
+import { PostModel } from 'dao/models';
 import { Comment } from 'interfaces';
 
 @Entity('comment')

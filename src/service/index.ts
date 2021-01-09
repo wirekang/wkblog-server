@@ -1,5 +1,5 @@
 import {
-  Action, ActionType, Auth, DAO, Filter, Service,
+  Action, ActionType, Auth, Dao, Filter, Service,
 } from 'interfaces';
 import { inject, injectable } from 'inversify';
 import TYPES from 'Types';
@@ -15,7 +15,7 @@ export default class MyService implements Service {
 
   @inject(TYPES.Auth) private auth!: Auth;
 
-  @inject(TYPES.DAO) private dao!: DAO;
+  @inject(TYPES.DAO) private dao!: Dao;
 
   private permMap!: Map<ActionType, Permission>;
 
