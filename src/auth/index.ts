@@ -9,9 +9,14 @@ export default class MyAuth implements Auth {
 
   private when!: number;
 
+  // eslint-disable-next-line class-methods-use-this
+  makeHash(id:string, pw:string):string {
+    return utils.makeHash(id + pw);
+  }
+
   login(id: string, pw: string): string {
-    this.when = Date.now();
-    if (Config.hash === utils.makeHash(id + pw)) {
+    if (Config.hash === this.makeHash(id, pw)) {
+      this.when = Date.now();
       this.hash = utils.makeHash(Config.hash + this.when.toString(10));
       return this.hash;
     }
