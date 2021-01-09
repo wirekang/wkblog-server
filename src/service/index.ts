@@ -1,8 +1,5 @@
 import {
-  Action,
-  ActionType,
-  Auth, DAO, Filter,
-  Service,
+  Action, ActionType, Auth, DAO, Filter, Service,
 } from 'interfaces';
 import { inject, injectable } from 'inversify';
 import TYPES from 'Types';
