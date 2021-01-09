@@ -137,7 +137,7 @@ export type Logout = Action<ActionType.Logout,
 export interface Service{
   do<A extends Action<ActionType, unknown, unknown>>(
     type:A['type'], input: A['input'], hash: string
-    ): Promise<A>
+    ): Promise<A['output']>
 }
 
 export interface DBOption{
