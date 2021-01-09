@@ -2,120 +2,72 @@
 /* eslint-disable class-methods-use-this */
 import 'reflect-metadata';
 import Config from 'Config';
-import {
-  Action,
-  ActionType,
-  Auth,
-  Comment, CommentDeleteInput, CommentInput,
-  CommentUpdateInput, Dao, DBOption, Filter, Post, PostInput,
-  PostSummary, PostUpdateInput, Service,
-} from 'interfaces';
-import { Container, injectable } from 'inversify';
+import * as I from 'interfaces';
+import { Container } from 'inversify';
 import MyService from 'service';
 import TYPES from 'Types';
-
-@injectable()
-class DAO4Test implements DAO {
-  async connect(option: DBOption): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  async close(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  async createPost(input: PostInput): Promise<number> {
-    return 1;
-  }
-
-  updatePost(input: PostUpdateInput): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  publishPost(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  hidePost(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  readPost(id: number, admin: boolean): Promise<Post> {
-    throw new Error('Method not implemented.');
-  }
-
-  readPostCount(admin: boolean, tagId?: number): Promise<number> {
-    throw new Error('Method not implemented.');
-  }
-
-  readPosts(offset: number, count: number, admin: boolean, tagId?: number): Promise<PostSummary[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  deletePost(id: number): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  createComment(input: CommentInput, admin: boolean): Promise<number> {
-    throw new Error('Method not implemented.');
-  }
-
-  updateComment(input: CommentUpdateInput, admin: boolean): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  readComments(postId: number): Promise<Comment[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  deleteComment(input: CommentDeleteInput, admin: boolean): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-}
-
-@injectable()
-class Filter4Test implements Filter {
-  escapeHTML(html: string): string {
-    return html;
-  }
-}
-
-@injectable()
-class Auth4Test implements Auth {
-  login(id: string, pw: string): string {
-    return 'z';
-  }
-
-  validate(hash: string): void {
-    console.log(hash);
-  }
-
-  isLogin(hash: string): boolean {
-    return hash === 'z';
-  }
-}
+import { AuthMock, DaoMock } from 'test/mock';
 
 describe('서비스', () => {
-  Config.parse('.test-config');
+  Config.parse('.config.test.json');
   const container = new Container();
-  container.bind<Service>(TYPES.Service).to(MyService);
-  container.bind<Dao>(TYPES.Dao).to(DAO4Test);
-  container.bind<Auth>(TYPES.Auth).to(Auth4Test);
-  container.bind<Filter>(TYPES.Filter).to(Filter4Test);
+  container.bind<I.Service>(TYPES.Service).to(MyService);
+  container.bind<I.Dao>(TYPES.Dao).to(DaoMock);
+  container.bind<I.Auth>(TYPES.Auth).to(AuthMock);
 
-  const service = container.get<Service>(TYPES.Service);
-  const dao = container.get<Dao>(TYPES.Dao);
-  const auth = container.get<Auth>(TYPES.Auth);
-  const filter = container.get<Filter>(TYPES.Filter);
+  const service = container.get<I.Service>(TYPES.Service);
+  const dao = container.get<I.Dao>(TYPES.Dao);
+  const auth = container.get<I.Auth>(TYPES.Auth);
 
-  it('', async () => {
-    const result = await service.onLogin('z', 'z');
-    console.log(result);
+  it('잘못된 로그인 시도', async () => {
+    try {
+      await service.do<I.Login>(
+        I.ActionType.Login, { id: 'vvv', pw: 'vvvvv' }, '',
+      );
+    } catch {
+      return;
+    }
+    fail();
+  });
+
+  let hs = '';
+  it('로그인', async () => {
+    const { hash } = await service.do<I.Login>(
+      I.ActionType.Login, { id: 'id', pw: 'pw' }, '',
+    );
+    hs = hash;
+    auth.validate(hash);
+  });
+
+  it('잘못된 로그아웃 시도', async () => {
+    try {
+      await service.do<I.Logout>(I.ActionType.Logout, null, ' ');
+    } catch {
+      return;
+    }
+    fail();
+  });
+
+  it('비 권한', async () => {
+    const result:any = await service.do<I.ReadPost>(I.ActionType.ReadPost, { id: 1 }, ' ');
+    expect(result.type).toBe(I.ActionType.ReadPost);
+    expect(result.input.id).toBe(1);
+  });
+
+  it('월권 행위', async () => {
+    try {
+      await service.do<I.UpdatePost>(I.ActionType.UpdatePost, { id: 1 } as any, ' ');
+    } catch {
+      return;
+    }
+    fail();
+  });
+
+  it('정당한 권한', async () => {
+    const result:any = await service.do<I.CreatePost>(
+      I.ActionType.CreatePost, { id: 1 } as any, hs,
+    );
+    expect(result.type).toBe(I.ActionType.CreatePost);
+    expect(result.input.id).toBe(1);
   });
 });
-
-/*
-테스트용 객체들이 리턴하는 값을 서비스가 똑바로 리턴하는지,
-논리적인 단계?도 다 맞는지 확인
-
-*/
