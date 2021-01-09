@@ -3,7 +3,7 @@ type PostIdOnly = {postId: number};
 type TagIdOnly = {tagId?: number};
 type CommentIdOnly = {commentId: number};
 type PasswordOnly = {password: string};
-type Empty = Record<string, never>;
+type Nothing = Record<string, never> | undefined | null;
 
 export interface Post{
   id: number
@@ -33,13 +33,13 @@ export type ReadPostsInput = TagIdOnly & { offset: number, count: number };
 export type ReadPostsOutput = PostSummary[];
 
 export type UpdatePostInput = IdOnly & CreatePostInput;
-export type UpdatePostOutput = Empty;
+export type UpdatePostOutput = Nothing;
 
 export type DeletePostInput = IdOnly;
-export type DeletePostOutput = Empty;
+export type DeletePostOutput = Nothing;
 
 export type PublishPostInput = IdOnly & Pick<Post, 'published'>;
-export type PublishPostOutput = Empty;
+export type PublishPostOutput = Nothing;
 
 export type CountPostsInput = TagIdOnly;
 export type CountPostsOutput = {postsCount: number};
@@ -65,23 +65,23 @@ export type ReadCommentsOutput = Comment[];
 
 export type UpdateCommentInput = Pick<Comment,
 'id' | 'text'> & PasswordOnly;
-export type UpdateCommentOutput = Empty;
+export type UpdateCommentOutput = Nothing;
 
 export type DeleteCommentInput = IdOnly & PasswordOnly;
-export type DeleteCommentOutput = Empty;
+export type DeleteCommentOutput = Nothing;
 
 export interface Tag{
   id: number
   name: string
 }
 
-export type ReadTagsInput = Empty;
+export type ReadTagsInput = Nothing;
 export type ReadTagsOutput= Tag[];
 
 export type LoginInput = {id:string, pw: string};
 export type LoginOutput = {hash: string};
-export type LogoutInput = Empty;
-export type LogoutOutput = Empty;
+export type LogoutInput = Nothing;
+export type LogoutOutput = Nothing;
 
 export enum ActionType{
   CreatePost,
