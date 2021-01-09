@@ -101,7 +101,7 @@ export default class MyDao implements I.Dao {
       throw Error();
     }
     const tags = await this.validateTags(input.tagNames);
-    const post = await this.postRepo.save({
+    await this.postRepo.save({
       id: input.id,
       title: input.title,
       description: input.description,
