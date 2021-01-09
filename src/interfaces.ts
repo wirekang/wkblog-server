@@ -3,6 +3,7 @@ type PostIdOnly = {postId: number};
 type TagIdOnly = {tagId?: number};
 type CommentIdOnly = {commentId: number};
 type PasswordOnly = {password: string};
+type Empty = Record<string, never>;
 
 export interface Post{
   id: number
@@ -74,7 +75,7 @@ export interface Tag{
   name: string
 }
 
-export type ReadTagsInput = Record<string, never>;
+export type ReadTagsInput = Empty;
 export type ReadTagsOutput= Tag[];
 
 export type LoginInput = {id:string, pw: string};
