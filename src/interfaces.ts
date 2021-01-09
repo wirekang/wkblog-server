@@ -29,7 +29,9 @@ export type CreatePostOutput = PostIdOnly;
 export type ReadPostInput = IdOnly;
 export type ReadPostOutput = Post;
 
-export type ReadPostsInput = TagIdOnly;
+export type ReadPostsInput = TagIdOnly & {
+  offset: number, count: number
+};
 export type ReadPostsOutput = PostSummary[];
 
 export type UpdatePostInput = IdOnly & CreatePostInput;
