@@ -20,6 +20,7 @@ export default class MyService implements Service {
   private permMap!: Map<ActionType, Permission>;
 
   constructor() {
+    this.permMap = new Map();
     this.permMap.set(ActionType.CreatePost, Permission.Admin);
     this.permMap.set(ActionType.UpdatePost, Permission.Admin);
     this.permMap.set(ActionType.DeletePost, Permission.Admin);
