@@ -1,3 +1,9 @@
+type IdOnly = {id: number };
+type PostIdOnly = {postId: number};
+type TagIdOnly = {tagId?: number};
+type CommentIdOnly = {commentId: number};
+type PasswordOnly = {password: string};
+
 export interface Post{
   id: number
   title: string
@@ -11,29 +17,31 @@ export interface Post{
   whenPublished: number
 }
 
-export interface PostInput{
-  title: Post['title']
-  description: Post['description']
-  tagNames: string[]
-  html: Post['html']
-}
+export type PostSummary = Pick<Post,
+'id' | 'title' | 'description' | 'tags' | 'whenPublished'> &
+{commentsCount: number};
 
-export interface PostUpdateInput{
-  id: Post['id']
-  title: Post['title']
-  description: Post['description']
-  tagNames: string[]
-  html: Post['html']
-}
+export type CreatePostInput = Pick<Post,
+ 'title' | 'description' | 'html'> & {tagNames: string[]};
+export type CreatePostOutput = PostIdOnly;
 
-export interface PostSummary{
-  id: Post['id']
-  title: Post['title']
-  description: Post['description']
-  tags: Post['tags']
-  whenPublished: Post['whenPublished']
-  commentsCount: number
-}
+export type ReadPostInput = IdOnly;
+export type ReadPostOutput = Post;
+
+export type ReadPostsInput = TagIdOnly;
+export type ReadPostsOutput = PostSummary[];
+
+export type UpdatePostInput = IdOnly & CreatePostInput;
+export type UpdatePostOutput = PostIdOnly;
+
+export type DeletePostInput = IdOnly;
+export type DeletePostOutput = PostIdOnly;
+
+export type PublishPostInput = IdOnly & Pick<Post, 'published'>;
+export type PublishPostOutput = PostIdOnly;
+
+export type CountPostsInput = TagIdOnly;
+export type CountPostsOutput = {postCount: number};
 
 export interface Comment{
   id: number
@@ -47,28 +55,63 @@ export interface Comment{
   whenUpdated: number
 }
 
-export interface CommentInput{
-  postId: Post['id']
-  parentId: Comment['id'] | null,
-  name: Comment['name']
-  password: string
-  text: Comment['text']
-}
+export type CreateCommentInput = Pick<Comment,
+'postId' | 'parentId' | 'name' | 'text'> & PasswordOnly;
+export type CreateCommentOutput = CommentIdOnly;
 
-export interface CommentUpdateInput{
-  id: Comment['id']
-  password: string
-  text: Comment['text']
-}
+export type ReadCommentsInput = PostIdOnly;
+export type ReadCommentsOutput = Comment[];
 
-export interface CommentDeleteInput{
-  id: Comment['id']
-  password: string
-}
+export type UpdateCommentInput = Pick<Comment,
+'id' | 'text'> & PasswordOnly;
+export type UpdateCommentOutput = CommentIdOnly;
+
+export type DeleteCommentInput = IdOnly & PasswordOnly;
+export type DeleteCommentOutput = CommentIdOnly;
 
 export interface Tag{
   id: number
   name: string
+}
+
+export type ReadTagsInput = Record<string, never>;
+export type ReadTagsOutput= Tag[];
+
+export type LoginInput = {id:string, pw: string};
+export type LoginOutput = {hash: string};
+
+type ActionType = 'createPost' | 'readPost' | 'readPosts' | 'updatePost' |
+'deletePost' | 'publishPost' | 'countPosts' | 'createComment' | 'readComments' |
+'updateComment' | 'deleteComment' | 'readTags' | 'login';
+
+export type Action<type extends ActionType, I, O> = {
+  type: type
+  input: I
+  output: O
+};
+export type CreatePost = Action<'createPost', CreatePostInput, CreatePostOutput>;
+export type ReadPost = Action<'readPost', ReadPostInput, ReadPostOutput>;
+export type ReadPosts = Action<'readPosts', ReadPostsInput, ReadPostsOutput>;
+export type UpdatePost = Action<'updatePost', UpdatePostInput, UpdatePostOutput>;
+export type DeletePost = Action<'deletePost', DeletePostInput, DeletePostOutput>;
+export type PublishPost = Action<'publishPost', PublishPostInput, PublishPostOutput>;
+export type CountPosts = Action<'countPosts', CountPostsInput, CountPostsOutput>;
+export type CreateComment = Action<'createComment', CreateCommentInput, CreateCommentOutput>;
+export type ReadComments = Action<'readComments', ReadCommentsInput, ReadCommentsOutput>;
+export type UpdateComment = Action<'updateComment', UpdateCommentInput, UpdateCommentOutput>;
+export type DeleteComment = Action<'deleteComment', DeleteCommentInput, DeleteCommentOutput>;
+export type ReadTags = Action<'readTags', ReadTagsInput, ReadTagsOutput>;
+export type Login = Action<'login', LoginInput, LoginOutput>;
+
+export interface ServiceResult<A extends Action<ActionType, unknown, unknown>>{
+  ok: number
+  result: A['output']
+}
+
+export interface Service{
+  do<A extends Action<ActionType, unknown, unknown>>(
+    type:A['type'], input: A['input'], hash: string
+    ): Promise<ServiceResult<A>>
 }
 
 export interface DBOption{
@@ -77,53 +120,14 @@ export interface DBOption{
   username: string,
   password: string,
   database: string,
-
-}
-
-export interface ServiceResult{
-  ok: number
-  result: any
-}
-
-export interface Service{
-  onLogin(id:string, pw:string): Promise<ServiceResult>
-
-  onPostCreate(hash:string, input: PostInput): Promise<ServiceResult>
-  onPostUpdate(hash:string, input: PostUpdateInput): Promise<ServiceResult>
-  onPostPublish(hash: string, id: Post['id']): Promise<ServiceResult>
-  onPoshHide(hash: string, id: Post['id']): Promise<ServiceResult>
-  onPostRead(hash:string, id: Post['id']): Promise<ServiceResult>
-  onPostCount(hash:string, tagId?: Tag['id']): Promise<ServiceResult>
-  onPostsRead(hash:string, offset:number, count:number, tagId?: Tag['id']): Promise<ServiceResult>
-  onPostDelete(hash:string, id: Post['id']): Promise<ServiceResult>
-
-  onCommentCreate(hash:string, input: CommentInput): Promise<ServiceResult>
-  onCommentUpdate(hash:string, input:CommentUpdateInput): Promise<ServiceResult>
-  onCommentsRead(postId:Post['id']): Promise<ServiceResult>
-  onCommentDelete(hash:string, input: CommentDeleteInput): Promise<ServiceResult>
-
-  onTagsRead(): Promise<ServiceResult>
 }
 
 export interface DAO {
   connect(option: DBOption): Promise<void>
   close(): Promise<void>
-
-  createPost(input: PostInput): Promise<Post['id']>
-  updatePost(input: PostUpdateInput): Promise<void>
-  publishPost(id: Post['id']): Promise<void>
-  hidePost(id: Post['id']): Promise<void>
-  readPost(id: Post['id'], admin:boolean): Promise<Post>
-  readPostCount(admin:boolean, tagId?: Tag['id']): Promise<number>
-  readPosts(offset:number, count:number, admin:boolean, tagId?:Tag['id']): Promise<PostSummary[]>
-  deletePost(id: Post['id']): Promise<void>
-
-  createComment(input: CommentInput, admin:boolean): Promise<Comment['id']>
-  updateComment(input: CommentUpdateInput, admin:boolean): Promise<void>
-  readComments(postId:Post['id']): Promise<Comment[]>
-  deleteComment(input: CommentDeleteInput, admin: boolean): Promise<void>
-
-  readTags(): Promise<Tag[]>
+  do<A extends Action<ActionType, unknown, unknown>>(
+    type:A['type'], input: A['input'], admin: boolean
+    ): Promise<A['output']>
 }
 
 export interface ServerOption{
@@ -136,7 +140,10 @@ export interface Server {
 }
 
 export interface Filter {
-  escapeHTML(html: string): string
+  badWord(str: string): string
+  html(str: string): string
+  commentName(str: string): string
+
 }
 
 export interface Auth{
