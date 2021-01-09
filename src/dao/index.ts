@@ -238,7 +238,8 @@ export default class MyDao implements I.Dao {
     return null;
   }
 
-  private readTags(): Promise<I.Tag[]> {
-    return this.tagRepo.find();
+  private async readTags(input:I.ReadTagsInput): Promise<I.ReadTagsOutput> {
+    const tags = await this.tagRepo.find();
+    return { tags };
   }
 }
