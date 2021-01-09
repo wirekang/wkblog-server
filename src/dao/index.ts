@@ -22,18 +22,18 @@ export default class MyDao implements I.Dao {
 
   constructor() {
     this.doMap = new Map();
-    this.doMap.set(I.ActionType.CreatePost, this.createPost);
-    this.doMap.set(I.ActionType.UpdatePost, this.updatePost);
-    this.doMap.set(I.ActionType.ReadPost, this.readPosts);
-    this.doMap.set(I.ActionType.ReadPosts, this.readPosts);
-    this.doMap.set(I.ActionType.DeletePost, this.deletePost);
-    this.doMap.set(I.ActionType.PublishPost, this.publishPost);
-    this.doMap.set(I.ActionType.CountPosts, this.countPosts);
-    this.doMap.set(I.ActionType.CreateComment, this.createComment);
-    this.doMap.set(I.ActionType.UpdateComment, this.updateComment);
-    this.doMap.set(I.ActionType.ReadComments, this.readComments);
-    this.doMap.set(I.ActionType.DeleteComment, this.deleteComment);
-    this.doMap.set(I.ActionType.ReadTags, this.readTags);
+    this.doMap.set(I.ActionType.CreatePost, this.createPost.bind(this));
+    this.doMap.set(I.ActionType.UpdatePost, this.updatePost.bind(this));
+    this.doMap.set(I.ActionType.ReadPost, this.readPosts.bind(this));
+    this.doMap.set(I.ActionType.ReadPosts, this.readPosts.bind(this));
+    this.doMap.set(I.ActionType.DeletePost, this.deletePost.bind(this));
+    this.doMap.set(I.ActionType.PublishPost, this.publishPost.bind(this));
+    this.doMap.set(I.ActionType.CountPosts, this.countPosts.bind(this));
+    this.doMap.set(I.ActionType.CreateComment, this.createComment.bind(this));
+    this.doMap.set(I.ActionType.UpdateComment, this.updateComment.bind(this));
+    this.doMap.set(I.ActionType.ReadComments, this.readComments.bind(this));
+    this.doMap.set(I.ActionType.DeleteComment, this.deleteComment.bind(this));
+    this.doMap.set(I.ActionType.ReadTags, this.readTags.bind(this));
   }
 
   private getDo(type:I.ActionType): any {
