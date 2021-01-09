@@ -2,9 +2,10 @@ import {
   Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,
 } from 'typeorm';
 import { PostModel } from 'db/models';
+import { Comment } from 'interfaces';
 
 @Entity('comment')
-export default class CommentModel {
+export default class CommentModel implements Comment {
   @PrimaryGeneratedColumn()
   id!: number;
 

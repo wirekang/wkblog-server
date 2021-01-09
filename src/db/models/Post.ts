@@ -1,11 +1,12 @@
 import { randomInt } from 'crypto';
 import { TagModel, CommentModel } from 'db/models';
+import { Post } from 'interfaces';
 import {
   Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('post')
-export default class PostModel {
+export default class PostModel implements Post {
   @PrimaryGeneratedColumn()
   id!: number;
 
