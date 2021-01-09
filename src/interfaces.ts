@@ -29,22 +29,20 @@ export type CreatePostOutput = PostIdOnly;
 export type ReadPostInput = IdOnly;
 export type ReadPostOutput = Post;
 
-export type ReadPostsInput = TagIdOnly & {
-  offset: number, count: number
-};
+export type ReadPostsInput = TagIdOnly & { offset: number, count: number };
 export type ReadPostsOutput = PostSummary[];
 
 export type UpdatePostInput = IdOnly & CreatePostInput;
-export type UpdatePostOutput = PostIdOnly;
+export type UpdatePostOutput = Empty;
 
 export type DeletePostInput = IdOnly;
-export type DeletePostOutput = PostIdOnly;
+export type DeletePostOutput = Empty;
 
 export type PublishPostInput = IdOnly & Pick<Post, 'published'>;
-export type PublishPostOutput = PostIdOnly;
+export type PublishPostOutput = Empty;
 
 export type CountPostsInput = TagIdOnly;
-export type CountPostsOutput = {postCount: number};
+export type CountPostsOutput = {postsCount: number};
 
 export interface Comment{
   id: number
@@ -67,10 +65,10 @@ export type ReadCommentsOutput = Comment[];
 
 export type UpdateCommentInput = Pick<Comment,
 'id' | 'text'> & PasswordOnly;
-export type UpdateCommentOutput = CommentIdOnly;
+export type UpdateCommentOutput = Empty;
 
 export type DeleteCommentInput = IdOnly & PasswordOnly;
-export type DeleteCommentOutput = CommentIdOnly;
+export type DeleteCommentOutput = Empty;
 
 export interface Tag{
   id: number
