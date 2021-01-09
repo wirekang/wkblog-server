@@ -24,7 +24,7 @@ export default class MyDao implements I.Dao {
     this.doMap = new Map();
     this.doMap.set(I.ActionType.CreatePost, this.createPost.bind(this));
     this.doMap.set(I.ActionType.UpdatePost, this.updatePost.bind(this));
-    this.doMap.set(I.ActionType.ReadPost, this.readPosts.bind(this));
+    this.doMap.set(I.ActionType.ReadPost, this.readPost.bind(this));
     this.doMap.set(I.ActionType.ReadPosts, this.readPosts.bind(this));
     this.doMap.set(I.ActionType.DeletePost, this.deletePost.bind(this));
     this.doMap.set(I.ActionType.PublishPost, this.publishPost.bind(this));
