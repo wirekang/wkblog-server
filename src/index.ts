@@ -6,7 +6,6 @@ import Config from 'Config';
 import utils from 'utils';
 
 (async () => {
-  utils.log('wblog', 'start');
   const dao = container.get<Dao>(TYPES.Dao);
   const server = container.get<Server>(TYPES.Server);
   const configPath = process.argv[2] || '.config.json';

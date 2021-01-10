@@ -15,8 +15,9 @@ describe('DB', () => {
   container.bind<I.Dao>(TYPES.Dao).to(MyDao);
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);
   const dao = container.get<I.Dao>(TYPES.Dao);
+  dao.init(Config);
   it('접속', async () => {
-    await dao.connect(Config);
+    await dao.connect();
   });
 
   const ids = [] as number[];

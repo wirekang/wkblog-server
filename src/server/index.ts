@@ -52,7 +52,7 @@ export default class MyServer implements I.Server {
   async open():Promise<void> {
     return new Promise((resolve) => {
       this.server = this.app.listen(this.option.port, () => {
-        utils.log('ServerOpen', `port: ${this.option.port}`);
+        utils.log('ServerOpen');
         resolve();
       });
     });
@@ -61,6 +61,7 @@ export default class MyServer implements I.Server {
   async close():Promise<void> {
     return new Promise((r) => {
       if (!this.server) {
+        utils.log('ServerClose');
         throw new Error();
       }
       this.server.close(() => { r(); });

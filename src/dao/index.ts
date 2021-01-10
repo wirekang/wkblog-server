@@ -5,6 +5,7 @@ import { inject, injectable } from 'inversify';
 import * as I from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'dao/models';
 import TYPES from 'Types';
+import utils from 'utils';
 
 @injectable()
 export default class MyDao implements I.Dao {
@@ -54,10 +55,12 @@ export default class MyDao implements I.Dao {
     this.postRepo = this.connection.getRepository(PostModel);
     this.tagRepo = this.connection.getRepository(TagModel);
     this.commentRepo = this.connection.getRepository(CommentModel);
+    utils.log('DBConnect');
   }
 
   async close(): Promise<void> {
     await this.connection.close();
+    utils.log('DBClose');
   }
 
   do<A extends I.Action<I.ActionType, unknown, unknown>>(
