@@ -20,7 +20,9 @@ export default class MyDao implements I.Dao {
 
   private doMap!: Map<I.ActionType, any>;
 
-  constructor() {
+  private option!:I.DaoOption;
+
+  init(option: I.DaoOption): void {
     this.doMap = new Map();
     this.doMap.set(I.ActionType.CreatePost, this.createPost.bind(this));
     this.doMap.set(I.ActionType.UpdatePost, this.updatePost.bind(this));
@@ -34,20 +36,21 @@ export default class MyDao implements I.Dao {
     this.doMap.set(I.ActionType.ReadComments, this.readComments.bind(this));
     this.doMap.set(I.ActionType.DeleteComment, this.deleteComment.bind(this));
     this.doMap.set(I.ActionType.ReadTags, this.readTags.bind(this));
+    this.option = option;
   }
 
   private getDo(type:I.ActionType): any {
     return this.doMap.get(type);
   }
 
-  async connect(option: I.DBOption): Promise<void> {
+  async connect(): Promise<void> {
     await createConnection({
       type: 'mariadb',
-      ...option,
+      ...this.option,
       entities: [PostModel, TagModel, CommentModel],
     });
     this.connection = getConnection();
-    await this.connection.synchronize(option.username === 'blog_test');
+    await this.connection.synchronize(this.option.username === 'blog_test');
     this.postRepo = this.connection.getRepository(PostModel);
     this.tagRepo = this.connection.getRepository(TagModel);
     this.commentRepo = this.connection.getRepository(CommentModel);

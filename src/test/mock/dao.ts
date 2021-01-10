@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import {
-  Action, ActionType, Dao, DBOption,
+  Action, ActionType, Dao, DaoOption,
 } from 'interfaces';
 import { injectable } from 'inversify';
 
 @injectable()
 export default class DaoMock implements Dao {
-  connect(option: DBOption): Promise<void> {
+  connect(option: DaoOption): Promise<void> {
     return 0 as any;
   }
 

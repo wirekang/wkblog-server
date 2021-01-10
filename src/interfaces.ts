@@ -140,7 +140,7 @@ export interface Service{
     ): Promise<A['output']>
 }
 
-export interface DBOption{
+export interface DaoOption{
   host: string,
   port: number,
   username: string,
@@ -149,7 +149,8 @@ export interface DBOption{
 }
 
 export interface Dao {
-  connect(option: DBOption): Promise<void>
+  init(option: DaoOption): void
+  connect(): Promise<void>
   close(): Promise<void>
   do<A extends Action<ActionType, unknown, unknown>>(
     type:A['type'], input: A['input'], admin?: boolean
