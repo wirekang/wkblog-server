@@ -161,7 +161,8 @@ export interface ServerOption{
 }
 
 export interface Server {
-  open(option: ServerOption): Promise<void>
+  init(option:ServerOption):void
+  open(): Promise<void>
   close(): Promise<void>
 }
 
