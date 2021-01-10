@@ -8,7 +8,10 @@ import { injectable } from 'inversify';
 
 @injectable()
 export default class DaoMock implements Dao {
-  connect(option: DaoOption): Promise<void> {
+  init(option: DaoOption): void {
+  }
+
+  connect(): Promise<void> {
     return 0 as any;
   }
 
