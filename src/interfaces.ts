@@ -182,6 +182,7 @@ export interface Auth{
 export interface LimiterOption{
   max: number
   delay: number
+  retry: number
 }
 
 export interface Limiter{
