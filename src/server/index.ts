@@ -25,7 +25,6 @@ export default class MyServer implements I.Server {
 
   init(option:I.ServerOption):void {
     this.option = option;
-    this.limiter.init({ max: 6, delay: 1000, retry: 60000 });
     this.router = new Router();
     this.setRoutes();
 
