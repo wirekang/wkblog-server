@@ -3,7 +3,6 @@ import container from 'inversify.config';
 import TYPES from 'Types';
 import { Dao, Limiter, Server } from 'interfaces';
 import Config from 'Config';
-import utils from 'utils';
 
 (async () => {
   const dao = container.get<Dao>(TYPES.Dao);
