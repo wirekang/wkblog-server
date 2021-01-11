@@ -1,41 +1,28 @@
 import 'reflect-metadata';
 import { Limiter } from 'interfaces';
 import MyLimiter from 'limiter';
+import Config from 'Config';
+import utils from 'utils';
 
 describe('Limiter', () => {
   const limiter:Limiter = new MyLimiter();
+  Config.parse('.config.test.json');
   it('init', () => {
-    limiter.init({ delay: 100, max: 3, retry: 500 });
+    limiter.init(Config.options.limiter);
   });
 
   it('정상', async () => {
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    await new Promise<void>((r) => { setTimeout(() => r(), 100); });
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    await new Promise<void>((r) => { setTimeout(() => r(), 100); });
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.2');
-    limiter.validate('127.0.0.2');
-    limiter.validate('127.0.0.2');
-    limiter.validate('127.0.0.3');
-    limiter.validate('127.0.0.3');
-    limiter.validate('127.0.0.3');
+    utils.repeat(() => { limiter.validate('127.0.0.1'); }, Config.options.limiter.max);
+    await utils.wait(Config.options.limiter.delay);
+    utils.repeat(() => { limiter.validate('127.0.0.1'); }, Config.options.limiter.max);
+    await utils.wait(Config.options.limiter.delay);
+    utils.repeat(() => { limiter.validate('127.0.0.1'); }, Config.options.limiter.max);
+    utils.repeat(() => { limiter.validate('127.0.0.2'); }, Config.options.limiter.max);
   });
 
   it('비정상', async () => {
     try {
-      limiter.validate('127.0.0.1');
-      await new Promise<void>((r) => { setTimeout(() => r(), 10); });
-      limiter.validate('127.0.0.1');
-      await new Promise<void>((r) => { setTimeout(() => r(), 10); });
-      limiter.validate('127.0.0.1');
-      limiter.validate('127.0.0.1');
+      utils.repeat(() => { limiter.validate('127.0.0.1'); }, Config.options.limiter.max + 1);
     } catch {
       return;
     }
@@ -44,7 +31,7 @@ describe('Limiter', () => {
 
   it('차단', async () => {
     try {
-      await new Promise<void>((r) => { setTimeout(() => r(), 200); });
+      await utils.wait(Config.options.limiter.delay);
       limiter.validate('127.0.0.1');
     } catch {
       return;
@@ -52,9 +39,7 @@ describe('Limiter', () => {
     fail();
   });
   it('차단 해제', async () => {
-    await new Promise<void>((r) => { setTimeout(() => r(), 400); });
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
-    limiter.validate('127.0.0.1');
+    await utils.wait(Config.options.limiter.retry);
+    utils.repeat(() => { limiter.validate('127.0.0.1'); }, Config.options.limiter.max);
   });
 });
