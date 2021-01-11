@@ -7,6 +7,7 @@ describe('Auth', () => {
   Config.parse('.config.test.json');
   const auth:Auth = new MyAuth();
   let hash = '';
+  auth.init(Config.options.auth);
   it('해시', () => {
     console.log((auth as MyAuth).makeHash('id', 'pw'));
   });
