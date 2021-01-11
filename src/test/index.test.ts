@@ -9,8 +9,8 @@ const server = container.get<Server>(TYPES.Server);
 it('구동', (async () => {
   const configPath = '.config.test.json';
   Config.parse(configPath);
-  await dao.init(Config);
-  await server.init({ port: Config.serverPort });
+  await dao.init(Config.options.dao);
+  await server.init(Config.options.server);
   await dao.connect();
   await server.open();
 }));

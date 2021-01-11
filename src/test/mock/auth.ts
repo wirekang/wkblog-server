@@ -1,9 +1,14 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable class-methods-use-this */
-import { Auth } from 'interfaces';
+import { Auth, AuthOption } from 'interfaces';
 import { injectable } from 'inversify';
 
 @injectable()
 export default class AuthMock implements Auth {
+  init(option: AuthOption): void {
+
+  }
+
   login(id: string, pw: string): string {
     if (id === 'id' && pw === 'pw') {
       return 'asdf';
