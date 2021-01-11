@@ -9,7 +9,7 @@ module.exports = {
   mode: 'production',
   entry: path.join(__dirname, 'src', 'index.ts'),
   output: {
-    filename: 'blog-back.js',
+    filename: 'wkblog.js',
     path: path.join(__dirname, 'dist'),
   },
   resolve: {
