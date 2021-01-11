@@ -12,4 +12,7 @@ export default {
   repeat(fn: ()=>void, time: number):void {
     [...new Array(time)].forEach(() => { fn(); });
   },
+  wait(ms: number):Promise<void> {
+    return new Promise<void>((r) => { setTimeout(() => r(), ms); });
+  },
 };
