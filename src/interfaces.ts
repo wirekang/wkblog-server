@@ -83,6 +83,13 @@ export type LoginOutput = {hash: string};
 export type LogoutInput = Nothing;
 export type LogoutOutput = Nothing;
 
+export interface PostSource {
+  id: number
+  postId: Post['id']
+  markdown: string
+  tagNamesComma: string
+}
+
 export enum ActionType{
   CreatePost,
   ReadPost,
