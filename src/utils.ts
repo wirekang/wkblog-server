@@ -9,4 +9,7 @@ export default {
     const date = new Date();
     console.log(`${date.toLocaleString(undefined, { hour12: false })}\t${title}\t${data}`);
   },
+  repeat(fn: any, time: number):void {
+    [...new Array(time)].forEach(() => { fn(); });
+  },
 };
