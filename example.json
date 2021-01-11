@@ -1,0 +1,22 @@
+{
+    "dao":{
+        "host":"",
+        "port":0,
+        "username":"",
+        "password":"",
+        "database":""
+    },
+    "server":{
+        "port":0
+    },
+    "limiter":{
+        "max":0,
+        "delay":0,
+        "retry":0
+    },
+    "auth":{
+        "hash":"",
+        "key":"",
+        "maxAge":0
+    }
+}
