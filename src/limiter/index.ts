@@ -7,18 +7,12 @@ export default class MyLimiter implements Limiter {
 
   private blockMap!: Map<string, boolean>;
 
-  private max!: number;
-
-  private delay!: number;
-
-  private retry!: number;
+  private option!: LimiterOption;
 
   init(option: LimiterOption): void {
     this.ipMap = new Map();
     this.blockMap = new Map();
-    this.max = option.max;
-    this.delay = option.delay;
-    this.retry = option.retry;
+    this.option = option;
   }
 
   validate(ip: string): void {
@@ -28,7 +22,7 @@ export default class MyLimiter implements Limiter {
 
     setTimeout(() => {
       this.ipMap.delete(ip);
-    }, this.delay);
+    }, this.option.delay);
 
     let point = this.ipMap.get(ip);
     if (!point) {
@@ -36,11 +30,11 @@ export default class MyLimiter implements Limiter {
       return;
     }
     point += 1;
-    if (point > this.max) {
+    if (point > this.option.max) {
       this.blockMap.set(ip, true);
       setTimeout(() => {
         this.blockMap.delete(ip);
-      }, this.retry);
+      }, this.option.retry);
       throw Error();
     }
     this.ipMap.set(ip, point);

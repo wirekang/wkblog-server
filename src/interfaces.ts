@@ -174,7 +174,14 @@ export interface Filter {
 
 }
 
+export interface AuthOption{
+  hash: string
+  key: string
+  maxAge: number
+}
+
 export interface Auth{
+  init(option:AuthOption): void
   login(id:string, pw:string):string
   validate(hash:string):void
   isLogin(hash:string):boolean

@@ -1,10 +1,16 @@
 import Config from 'Config';
-import { Auth } from 'interfaces';
+import { Auth, AuthOption } from 'interfaces';
 import { injectable } from 'inversify';
 import utils from 'utils';
 
 @injectable()
 export default class MyAuth implements Auth {
+  private option!:AuthOption;
+
+  init(option: AuthOption): void {
+    this.option = option;
+  }
+
   private hash!: string;
 
   private when!: number;
@@ -15,9 +21,9 @@ export default class MyAuth implements Auth {
   }
 
   login(id: string, pw: string): string {
-    if (Config.hash === this.makeHash(id, pw)) {
+    if (this.option.hash === this.makeHash(id, pw)) {
       this.when = Date.now();
-      this.hash = utils.makeHash(Config.hash + this.when.toString(10));
+      this.hash = utils.makeHash(this.option.hash + this.when.toString(10));
       utils.log('AuthLogin', `id:${id}`);
       return this.hash;
     }
@@ -30,7 +36,7 @@ export default class MyAuth implements Auth {
       throw Error();
     }
 
-    if (Date.now() - this.when > Config.maxAge) {
+    if (Date.now() - this.when > this.option.maxAge) {
       utils.log('AuthValidateAge');
       throw Error();
     }

@@ -1,35 +1,29 @@
 import fs from 'fs';
+import {
+  AuthOption, DaoOption, LimiterOption, ServerOption,
+} from 'interfaces';
 import path from 'path';
 
+interface Options{
+  dao:DaoOption
+  server:ServerOption
+  limiter:LimiterOption
+  auth:AuthOption
+}
+
 class Config {
-  host!:string;
-
-  port!:number;
-
-  username!:string;
-
-  password!:string;
-
-  database!:string;
-
-  key!:string;
-
-  hash!:string;
-
-  maxAge!: number;
-
-  serverPort!: number;
+  options!: Options;
 
   parse(configFilePath: string) {
     const cfg = fs.readFileSync(
       path.resolve(process.cwd(), configFilePath),
     );
-    Object.assign(this, JSON.parse(cfg.toString()));
-    console.log('Config loaded');
-    if (!(this.host && this.port && this.username && this.password
-      && this.database && this.key && this.hash && this.serverPort)) {
-      throw new Error(`Config: ${this}`);
+    this.options = JSON.parse(cfg.toString());
+    if (!(this.options && this.options.auth && this.options.dao
+      && this.options.limiter && this.options.server)) {
+      throw new Error(`Config: ${cfg.toString()}`);
     }
+    console.log('Config loaded');
   }
 }
 
