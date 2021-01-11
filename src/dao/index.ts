@@ -1,9 +1,9 @@
-import {
-  createConnection, Connection, Repository, getConnection,
-} from 'typeorm';
-import { inject, injectable } from 'inversify';
-import * as I from 'interfaces';
 import { CommentModel, PostModel, TagModel } from 'dao/models';
+import * as I from 'interfaces';
+import { inject, injectable } from 'inversify';
+import {
+  Connection, createConnection, getConnection, Repository,
+} from 'typeorm';
 import TYPES from 'Types';
 import utils from 'utils';
 

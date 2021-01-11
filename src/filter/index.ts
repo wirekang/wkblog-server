@@ -1,6 +1,6 @@
 /* eslint-disable class-methods-use-this */
-import { Filter } from 'interfaces';
 import escapeHtml from 'escape-html';
+import { Filter } from 'interfaces';
 import { injectable } from 'inversify';
 
 @injectable()

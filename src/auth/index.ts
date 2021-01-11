@@ -1,4 +1,3 @@
-import Config from 'Config';
 import { Auth, AuthOption } from 'interfaces';
 import { injectable } from 'inversify';
 import utils from 'utils';

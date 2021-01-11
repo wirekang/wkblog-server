@@ -1,8 +1,8 @@
-import 'reflect-metadata';
-import container from 'inversify.config';
-import TYPES from 'Types';
-import { Dao, Limiter, Server } from 'interfaces';
 import Config from 'Config';
+import { Dao, Limiter, Server } from 'interfaces';
+import container from 'inversify.config';
+import 'reflect-metadata';
+import TYPES from 'Types';
 
 (async () => {
   const dao = container.get<Dao>(TYPES.Dao);

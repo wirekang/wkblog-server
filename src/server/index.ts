@@ -1,11 +1,11 @@
 import http from 'http';
-import Koa from 'koa';
-import Router from 'koa-router';
-import json from 'koa-json';
-import bodyParser from 'koa-bodyparser';
-import helmet from 'koa-helmet';
 import * as I from 'interfaces';
 import { inject, injectable } from 'inversify';
+import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
+import helmet from 'koa-helmet';
+import json from 'koa-json';
+import Router from 'koa-router';
 import TYPES from 'Types';
 import utils from 'utils';
 
