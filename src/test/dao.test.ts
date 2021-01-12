@@ -1,7 +1,7 @@
-import Config from 'Config';
 import MyDao from 'dao';
 import * as I from 'interfaces';
 import { Container } from 'inversify';
+import Option from 'Option';
 import 'reflect-metadata';
 import { ConverterMock, FilterMock } from 'test/mock';
 import TYPES from 'Types';
@@ -10,13 +10,12 @@ const POST_COUNT = 10;
 const MAX_DELAY = 5000;
 
 describe('DB', () => {
-  Config.parse('.config.json');
   const container = new Container();
   container.bind<I.Dao>(TYPES.Dao).to(MyDao);
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);
   container.bind<I.Converter>(TYPES.Converter).to(ConverterMock);
   const dao = container.get<I.Dao>(TYPES.Dao);
-  dao.init(Config.options.dao);
+  dao.init(Option.dao());
   it('접속', async () => {
     await dao.connect();
   });

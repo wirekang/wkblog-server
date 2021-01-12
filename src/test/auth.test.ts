@@ -1,13 +1,12 @@
 import 'reflect-metadata';
 import MyAuth from 'auth';
-import Config from 'Config';
+import Option from 'Option';
 import { Auth } from 'interfaces';
 
 describe('Auth', () => {
-  Config.parse('.config.json');
   const auth:Auth = new MyAuth();
   let hash = '';
-  auth.init(Config.options.auth);
+  auth.init(Option.auth());
   it('해시', () => {
     console.log((auth as MyAuth).makeHash('id', 'pw'));
   });

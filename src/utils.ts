@@ -1,9 +1,10 @@
-import Config from 'Config';
 import crypto from 'crypto';
+import Option from 'Option';
 
+const { key } = Option.auth();
 export default {
   makeHash(str: string):string {
-    return crypto.createHmac('sha256', Config.options.auth.key).update(str, 'utf8').digest('hex');
+    return crypto.createHmac('sha256', key).update(str, 'utf8').digest('hex');
   },
   log(title:string, data?:string):void {
     const date = new Date();

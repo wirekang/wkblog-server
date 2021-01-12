@@ -7,8 +7,7 @@ import {
 } from 'interfaces';
 import { DaoMock, LimiterMock, ServiceMock } from 'test/mock';
 import MyServer from 'server';
-
-const port = 8081;
+import Option from 'Option';
 
 describe('Server', () => {
   const container = new Container();
@@ -17,13 +16,15 @@ describe('Server', () => {
   container.bind<Server>(TYPES.Server).to(MyServer);
   container.bind<Limiter>(TYPES.Limiter).to(LimiterMock);
   const server = container.get<Server>(TYPES.Server);
+  const option = Option.server();
+  const api = `http://127.0.0.1:${option.port}/api`;
   it('open', async () => {
-    server.init({ port });
+    server.init(option);
     await server.open();
   });
 
   it('요청', async () => {
-    const res = await fetch(`http://127.0.0.1:${port}/api`, {
+    const res = await fetch(api, {
       method: 'post',
       body: JSON.stringify({
         action: 'CreatePost',
@@ -40,12 +41,12 @@ describe('Server', () => {
   });
 
   it('잘못된 시도', async () => {
-    const res = await fetch(`http://127.0.0.1:${port}/api`, {
+    const res = await fetch(api, {
       method: 'post',
     });
     expect(res.status).toBe(400);
 
-    const res2 = await fetch(`http://127.0.0.1:${port}/api`, {
+    const res2 = await fetch(api, {
       method: 'get',
     });
     expect(res2.status).toBe(405);

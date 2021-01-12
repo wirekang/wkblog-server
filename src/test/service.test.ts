@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this */
 import 'reflect-metadata';
-import Config from 'Config';
 import * as I from 'interfaces';
 import { Container } from 'inversify';
 import MyService from 'service';
@@ -9,7 +8,6 @@ import TYPES from 'Types';
 import { AuthMock, DaoMock } from 'test/mock';
 
 describe('서비스', () => {
-  Config.parse('.config.json');
   const container = new Container();
   container.bind<I.Service>(TYPES.Service).to(MyService);
   container.bind<I.Dao>(TYPES.Dao).to(DaoMock);

@@ -66,6 +66,7 @@
     "test:index": "jest --runInBand ./src/test/index.test.ts"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "escape-html": "^1.0.3",
     "inversify": "^5.0.5",
     "koa": "^2.13.0",

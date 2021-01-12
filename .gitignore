@@ -1,5 +1,3 @@
 node_modules/
 dist/
-.config.json
-.config.test.json
-example/
+.env

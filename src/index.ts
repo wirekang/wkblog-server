@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import Config from 'Config';
+import Option from 'Option';
 import {
   Auth,
   Converter, Dao, Filter, Limiter, Server, Service,
@@ -16,11 +16,11 @@ import TYPES from 'Types';
   const service = container.get<Service>(TYPES.Service);
   const filter = container.get<Filter>(TYPES.Filter);
   const configPath = process.argv[2] || '.config.json';
-  Config.parse(configPath);
-  auth.init(Config.options.auth);
-  limiter.init(Config.options.limiter);
-  await dao.init(Config.options.dao);
-  await server.init(Config.options.server);
+
+  auth.init(Option.auth());
+  limiter.init(Option.limiter());
+  await dao.init(Option.dao());
+  await server.init(Option.server());
   await dao.connect();
   await server.open();
 })();
