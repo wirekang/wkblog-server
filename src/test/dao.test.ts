@@ -228,6 +228,34 @@ describe('DB', () => {
     fail();
   });
 
+  it('마크다운 확인 - 업데이트', async () => {
+    const { postSummaries } = await dao.do<I.ReadPosts>(
+      I.ActionType.ReadPosts, { count: 1, offset: 0 }, true,
+    );
+    const { id } = postSummaries[0];
+    const markdown = 'asdfasdf';
+    await dao.do<I.UpdatePost>(I.ActionType.UpdatePost, { id, markdown });
+
+    const res = await dao.do<I.ReadPostMarkdown>(
+      I.ActionType.ReadPostMarkdown, { id }, true,
+    );
+    expect(res.markdown).toBe(markdown);
+  });
+
+  it('마크다운 확인 - 생성', async () => {
+    const markdown = 'asdfasdf';
+    const { postId } = await dao.do<I.CreatePost>(
+      I.ActionType.CreatePost, {
+        title: 't', description: 'd', tagNames: [], markdown,
+      },
+    );
+
+    const res = await dao.do<I.ReadPostMarkdown>(
+      I.ActionType.ReadPostMarkdown, { id: postId }, true,
+    );
+    expect(res.markdown).toBe(markdown);
+  });
+
   it('닫기', async () => {
     await dao.close();
   });
