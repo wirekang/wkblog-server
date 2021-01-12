@@ -2,7 +2,7 @@ import { CommentModel, PostModel, TagModel } from 'dao/models';
 import * as I from 'interfaces';
 import { inject, injectable } from 'inversify';
 import {
-  Connection, createConnection, getConnection, Repository,
+  Connection, createConnection, DeepPartial, getConnection, Repository,
 } from 'typeorm';
 import TYPES from 'Types';
 import utils from 'utils';
@@ -110,16 +110,14 @@ export default class MyDao implements I.Dao {
     if (!count) {
       throw Error();
     }
-    const tags = await this.validateTags(input.tagNames);
-    await this.postRepo.save({
-      id: input.id,
-      title: input.title,
-      description: input.description,
-      html: this.converter.toHtml(input.markdown),
-      markdown: input.markdown,
-      tags,
-      whenUpdated: Date.now(),
-    });
+    const pm:DeepPartial<PostModel> = new PostModel();
+    pm.id = input.id;
+    pm.tags = input.tagNames && await this.validateTags(input.tagNames);
+    pm.markdown = input.markdown;
+    pm.description = input.description;
+    pm.title = input.title;
+    pm.whenUpdated = Date.now();
+    await this.postRepo.save(pm);
     return null;
   }
 

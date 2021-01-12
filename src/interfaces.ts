@@ -36,7 +36,7 @@ export type ReadPostsOutput = {postSummaries: PostSummary[]};
 export type ReadPostMarkdownInput = IdOnly;
 export type ReadPostMarkdownOutput = Pick<Post, 'markdown'>;
 
-export type UpdatePostInput = IdOnly & CreatePostInput;
+export type UpdatePostInput = IdOnly & Partial<CreatePostInput>;
 export type UpdatePostOutput = Nothing;
 
 export type DeletePostInput = IdOnly;
