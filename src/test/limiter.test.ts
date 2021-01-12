@@ -6,7 +6,7 @@ import utils from 'utils';
 
 describe('Limiter', () => {
   const limiter:Limiter = new MyLimiter();
-  Config.parse('.config.test.json');
+  Config.parse('.config.json');
   it('init', () => {
     limiter.init(Config.options.limiter);
   });

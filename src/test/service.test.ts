@@ -9,7 +9,7 @@ import TYPES from 'Types';
 import { AuthMock, DaoMock } from 'test/mock';
 
 describe('서비스', () => {
-  Config.parse('.config.test.json');
+  Config.parse('.config.json');
   const container = new Container();
   container.bind<I.Service>(TYPES.Service).to(MyService);
   container.bind<I.Dao>(TYPES.Dao).to(DaoMock);

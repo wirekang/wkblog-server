@@ -4,7 +4,7 @@ import Config from 'Config';
 import { Auth } from 'interfaces';
 
 describe('Auth', () => {
-  Config.parse('.config.test.json');
+  Config.parse('.config.json');
   const auth:Auth = new MyAuth();
   let hash = '';
   auth.init(Config.options.auth);

@@ -10,7 +10,7 @@ const POST_COUNT = 10;
 const MAX_DELAY = 5000;
 
 describe('DB', () => {
-  Config.parse('.config.test.json');
+  Config.parse('.config.json');
   const container = new Container();
   container.bind<I.Dao>(TYPES.Dao).to(MyDao);
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);
