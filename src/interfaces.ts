@@ -11,6 +11,7 @@ export interface Post{
   description: string
   tags: Tag[]
   html: string
+  markdown: string
   comments: Comment[]
   published:boolean
   whenCreated: number
@@ -23,14 +24,17 @@ export type PostSummary = Pick<Post,
 {commentsCount: number};
 
 export type CreatePostInput = Pick<Post,
- 'title' | 'description' | 'html'> & {tagNames: string[]};
+ 'title' | 'description' | 'markdown'> & {tagNames: string[]};
 export type CreatePostOutput = PostIdOnly;
 
 export type ReadPostInput = IdOnly;
-export type ReadPostOutput = {post: Post};
+export type ReadPostOutput = {post: Omit<Post, 'markdown'>};
 
 export type ReadPostsInput = TagIdOnly & { offset: number, count: number };
 export type ReadPostsOutput = {postSummaries: PostSummary[]};
+
+export type ReadPostMarkdownInput = IdOnly;
+export type ReadPostMarkdownOutput = Pick<Post, 'markdown'>;
 
 export type UpdatePostInput = IdOnly & CreatePostInput;
 export type UpdatePostOutput = Nothing;
@@ -83,17 +87,11 @@ export type LoginOutput = {hash: string};
 export type LogoutInput = Nothing;
 export type LogoutOutput = Nothing;
 
-export interface PostSource {
-  id: number
-  postId: Post['id']
-  markdown: string
-  tagNamesComma: string
-}
-
 export enum ActionType{
   CreatePost,
   ReadPost,
   ReadPosts,
+  ReadPostMarkdown,
   UpdatePost,
   DeletePost,
   PublishPost,
@@ -118,6 +116,8 @@ export type ReadPost = Action<ActionType.ReadPost,
  ReadPostInput, ReadPostOutput>;
 export type ReadPosts = Action<ActionType.ReadPosts,
  ReadPostsInput, ReadPostsOutput>;
+export type ReadPostMarkdown = Action<ActionType.ReadPostMarkdown,
+  ReadPostMarkdownInput, ReadPostMarkdownOutput>;
 export type UpdatePost = Action<ActionType.UpdatePost,
  UpdatePostInput, UpdatePostOutput>;
 export type DeletePost = Action<ActionType.DeletePost,
@@ -204,4 +204,8 @@ export interface LimiterOption{
 export interface Limiter{
   init(option: LimiterOption):void
   validate(ip:string):void
+}
+
+export interface Converter{
+  toHtml(markdown: string): string
 }

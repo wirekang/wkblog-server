@@ -5,5 +5,6 @@ const TYPES = {
   Auth: Symbol.for('Auth'),
   Service: Symbol.for('Service'),
   Limiter: Symbol.for('Limiter'),
+  Converter: Symbol.for('Converter'),
 };
 export default TYPES;

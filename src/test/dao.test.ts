@@ -1,10 +1,10 @@
-import 'reflect-metadata';
 import Config from 'Config';
 import MyDao from 'dao';
 import * as I from 'interfaces';
 import { Container } from 'inversify';
+import 'reflect-metadata';
+import { ConverterMock, FilterMock } from 'test/mock';
 import TYPES from 'Types';
-import { FilterMock } from 'test/mock';
 
 const POST_COUNT = 10;
 const MAX_DELAY = 5000;
@@ -14,6 +14,7 @@ describe('DB', () => {
   const container = new Container();
   container.bind<I.Dao>(TYPES.Dao).to(MyDao);
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);
+  container.bind<I.Converter>(TYPES.Converter).to(ConverterMock);
   const dao = container.get<I.Dao>(TYPES.Dao);
   dao.init(Config.options.dao);
   it('접속', async () => {
@@ -32,7 +33,7 @@ describe('DB', () => {
         await createRecursive(i - 1);
         const tagNames = [...new Array(tagLength(i))].map((_, j) => tagName(i, j));
         const id = await dao.do<I.CreatePost>(I.ActionType.CreatePost, {
-          html: 'h',
+          markdown: 'h',
           description: 'd',
           title: `t${i}`,
           tagNames,
@@ -61,7 +62,7 @@ describe('DB', () => {
     await dao.do<I.UpdatePost>(I.ActionType.UpdatePost, {
       id,
       description: '수정',
-      html: '수정',
+      markdown: '수정',
       title: 'tnwjd',
       tagNames: tagNamess[5],
     });

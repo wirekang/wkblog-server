@@ -11,6 +11,8 @@ import utils from 'utils';
 export default class MyDao implements I.Dao {
   @inject(TYPES.Filter) private filter!:I.Filter;
 
+  @inject(TYPES.Converter) private converter!:I.Converter;
+
   private connection!:Connection;
 
   private postRepo!:Repository<PostModel>;
@@ -93,7 +95,8 @@ export default class MyDao implements I.Dao {
     const post = await this.postRepo.save({
       title: input.title,
       description: input.description,
-      html: input.html,
+      html: this.converter.toHtml(input.markdown),
+      markdown: input.markdown,
       tags,
       whenCreated: Date.now(),
       whenPublished: Date.now() * 2,
@@ -111,7 +114,8 @@ export default class MyDao implements I.Dao {
       id: input.id,
       title: input.title,
       description: input.description,
-      html: input.html,
+      html: this.converter.toHtml(input.markdown),
+      markdown: input.markdown,
       tags,
       whenUpdated: Date.now(),
     });
@@ -141,6 +145,17 @@ export default class MyDao implements I.Dao {
       .leftJoinAndSelect('post.comments', 'comment')
       .getOneOrFail();
     return { post };
+  }
+
+  private async readPostMarkdown(input: I.ReadPostMarkdownInput)
+  : Promise<I.ReadPostMarkdownOutput> {
+    const post = await this.postRepo.findOne(input.id, {
+      select: ['markdown'],
+    });
+    if (!post) {
+      throw Error();
+    }
+    return { markdown: post.markdown };
   }
 
   private async countPosts(input:I.CountPostsInput, admin: boolean)

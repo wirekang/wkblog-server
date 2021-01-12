@@ -18,6 +18,9 @@ export default class PostModel implements Post {
   @Column()
   html!: string;
 
+  @Column()
+  markdown!: string;
+
   @Column({ default: false })
   published!: boolean;
 
