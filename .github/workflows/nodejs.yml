@@ -22,11 +22,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: DB_DB=${{ secrets.DB_DB }}
-      - run: DB_HOST=${{ secrets.DB_HOST }}
-      - run: DB_PASS=${{ secrets.DB_PASS }}
-      - run: DB_PORT=${{ secrets.DB_PORT }}
-      - run: DB_USER=${{ secrets.DB_USER }}
       - run: npm install
       - run: npm test
       - run: npm run build
@@ -35,11 +30,11 @@ jobs:
           AUTH_HASH: ${{ secrets.AUTH_HASH }}
           AUTH_KEY: ${{ secrets.AUTH_KEY }}
           AUTH_MAX_AGE: ${{ secrets.AUTH_MAX_AGE }}
-          # DB_DB: ${{ secrets.DB_DB }}
-          # DB_HOST: ${{ secrets.DB_HOST }}
-          # DB_PASS: ${{ secrets.DB_PASS }}
-          # DB_PORT: ${{ secrets.DB_PORT }}
-          # DB_USER: ${{ secrets.DB_USER }}
+          DB_DB: ${{ secrets.DB_DB }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
           LIMITER_DELAY: ${{ secrets.LIMITER_DELAY }}
           LIMITER_MAX: ${{ secrets.LIMITER_MAX }}
           LIMITER_RETRY: ${{ secrets.LIMITER_RETRY }}
