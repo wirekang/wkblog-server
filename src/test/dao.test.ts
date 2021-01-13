@@ -7,7 +7,7 @@ import { ConverterMock, FilterMock } from 'test/mock';
 import TYPES from 'Types';
 
 const POST_COUNT = 10;
-const MAX_DELAY = 5000;
+const MAX_DELAY = 50000;
 
 describe('DB', () => {
   const container = new Container();
