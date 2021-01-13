@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import {
   AuthOption, DaoOption, LimiterOption, ServerOption,
 } from 'interfaces';
+import utils from 'utils';
 
 function str(a:any): string {
   if (!a) {
@@ -18,15 +19,14 @@ function int(i:any): number {
 }
 
 class Option {
-  private env;
+  private env: NodeJS.ProcessEnv | dotenv.DotenvParseOutput;
 
   constructor() {
     const result = dotenv.config();
-    if (result.error) {
-      throw result.error;
-    }
-    if (!result.parsed) {
-      throw Error();
+    this.env = process.env;
+    if (result.error || !result.parsed) {
+      utils.log('NoDotEnv');
+      return;
     }
     this.env = result.parsed;
   }

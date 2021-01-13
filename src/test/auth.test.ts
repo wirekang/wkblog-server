@@ -10,7 +10,7 @@ describe('Auth', () => {
   const option = Option.auth();
   auth.init(option);
   it('해시', () => {
-    console.log((auth as MyAuth).makeHash('id', 'pw'));
+    console.log((auth as MyAuth).makeHash('idpw'));
   });
   it('로그인', () => {
     hash = auth.login('id', 'pw');

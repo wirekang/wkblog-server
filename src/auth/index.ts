@@ -1,6 +1,7 @@
 import { Auth, AuthOption } from 'interfaces';
 import { injectable } from 'inversify';
 import utils from 'utils';
+import crypto from 'crypto';
 
 @injectable()
 export default class MyAuth implements Auth {
@@ -14,15 +15,15 @@ export default class MyAuth implements Auth {
 
   private when!: number;
 
-  // eslint-disable-next-line class-methods-use-this
-  makeHash(id:string, pw:string):string {
-    return utils.makeHash(id + pw);
+  makeHash(str:string):string {
+    return crypto.createHmac('sha256', this.option.key)
+      .update(str, 'utf8').digest('hex');
   }
 
   login(id: string, pw: string): string {
-    if (this.option.hash === this.makeHash(id, pw)) {
+    if (this.option.hash === this.makeHash(id + pw)) {
       this.when = Date.now();
-      this.hash = utils.makeHash(this.option.hash + this.when.toString(10));
+      this.hash = this.makeHash(this.option.hash + this.when.toString(10));
       utils.log('AuthLogin', `id:${id}`);
       return this.hash;
     }
