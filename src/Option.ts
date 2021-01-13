@@ -22,12 +22,11 @@ class Option {
   private env!: NodeJS.ProcessEnv | dotenv.DotenvParseOutput;
 
   constructor() {
-    this.loadConfig();
-  }
-
-  loadConfig(path?: string) {
-    const result = dotenv.config({ path });
+    const result = dotenv.config();
     this.env = process.env;
+    if (process.env.CI) {
+      return;
+    }
     if (result.error || !result.parsed) {
       utils.log('NoDotEnv');
       return;
