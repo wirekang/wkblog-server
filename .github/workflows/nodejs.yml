@@ -18,16 +18,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set env
-        run: DB_DB=${{ secrets.DB_DB }}
-        run:  DB_HOST=${{ secrets.DB_HOST }}
-        run:  DB_PASS=${{ secrets.DB_PASS }}
-        run:  DB_PORT=${{ secrets.DB_PORT }}
-        run:  DB_USER=${{ secrets.DB_USER }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: DB_DB=${{ secrets.DB_DB }}
+      - run: DB_HOST=${{ secrets.DB_HOST }}
+      - run: DB_PASS=${{ secrets.DB_PASS }}
+      - run: DB_PORT=${{ secrets.DB_PORT }}
+      - run: DB_USER=${{ secrets.DB_USER }}
       - run: npm install
       - run: npm test
       - run: npm run build
