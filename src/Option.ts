@@ -19,10 +19,14 @@ function int(i:any): number {
 }
 
 class Option {
-  private env: NodeJS.ProcessEnv | dotenv.DotenvParseOutput;
+  private env!: NodeJS.ProcessEnv | dotenv.DotenvParseOutput;
 
   constructor() {
-    const result = dotenv.config();
+    this.loadConfig();
+  }
+
+  loadConfig(path?: string) {
+    const result = dotenv.config({ path });
     this.env = process.env;
     if (result.error || !result.parsed) {
       utils.log('NoDotEnv');

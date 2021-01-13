@@ -63,6 +63,7 @@
     "test:auth": "jest --runInBand ./src/test/auth.test.ts",
     "test:filter": "jest --runInBand ./src/test/filter.test.ts",
     "test:limiter": "jest --runInBand ./src/test/limiter.test.ts",
+    "test:option": "jest --runInBand ./src/test/option.test.ts",
     "test:index": "jest --runInBand ./src/test/index.test.ts"
   },
   "dependencies": {
