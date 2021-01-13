@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import dotenv from 'dotenv';
 import {
   AuthOption, DaoOption, LimiterOption, ServerOption,
@@ -19,10 +20,7 @@ function int(i:any): number {
 }
 
 class Option {
-  private env!: NodeJS.ProcessEnv | dotenv.DotenvParseOutput;
-
   constructor() {
-    this.env = process.env;
     if (process.env.CI) {
       console.log('###################');
       return;
@@ -30,40 +28,38 @@ class Option {
     const result = dotenv.config();
     if (result.error || !result.parsed) {
       utils.log('NoDotEnv');
-      return;
     }
-    this.env = result.parsed;
   }
 
   auth():AuthOption {
     return {
-      hash: str(this.env.AUTH_HASH),
-      key: str(this.env.AUTH_KEY),
-      maxAge: int(this.env.AUTH_MAX_AGE),
+      hash: str(process.env.AUTH_HASH),
+      key: str(process.env.AUTH_KEY),
+      maxAge: int(process.env.AUTH_MAX_AGE),
     };
   }
 
   dao():DaoOption {
     return {
-      database: str(this.env.DB_DB),
-      host: str(this.env.DB_HOST),
-      password: str(this.env.DB_PASS),
-      port: int(this.env.DB_PORT),
-      username: str(this.env.DB_USER),
+      database: str(process.env.DB_DB),
+      host: str(process.env.DB_HOST),
+      password: str(process.env.DB_PASS),
+      port: int(process.env.DB_PORT),
+      username: str(process.env.DB_USER),
     };
   }
 
   limiter():LimiterOption {
     return {
-      delay: int(this.env.LIMITER_DELAY),
-      max: int(this.env.LIMITER_MAX),
-      retry: int(this.env.LIMITER_RETRY),
+      delay: int(process.env.LIMITER_DELAY),
+      max: int(process.env.LIMITER_MAX),
+      retry: int(process.env.LIMITER_RETRY),
     };
   }
 
   server():ServerOption {
     return {
-      port: int(this.env.SERVER_PORT),
+      port: int(process.env.SERVER_PORT),
     };
   }
 }
