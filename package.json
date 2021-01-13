@@ -56,7 +56,7 @@
   "scripts": {
     "start": "kill-port 9229 &&NODE_PATH=./src node -r ts-node/register src/index.ts ",
     "debug": "NODE_PATH=./src nodemon --watch src --delay 2 --exec node -r ts-node/register --inspect src/index.ts",
-    "build": "NODE_ENV=production npx webpack --mode production --progress",
+    "build": "NODE_ENV=production npx webpack --mode production",
     "test": "jest --runInBand ./src/test/",
     "test:dao": "jest --runInBand ./src/test/dao.test.ts",
     "test:service": "jest --runInBand ./src/test/service.test.ts",
