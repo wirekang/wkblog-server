@@ -25,7 +25,7 @@ export type PostSummary = Pick<Post,
 
 export type CreatePostInput = Pick<Post,
  'title' | 'description' | 'markdown'> & {tagNames: string[]};
-export type CreatePostOutput = PostIdOnly;
+export type CreatePostOutput = IdOnly;
 
 export type ReadPostInput = IdOnly;
 export type ReadPostOutput = {post: Omit<Post, 'markdown'>};
@@ -62,7 +62,7 @@ export interface Comment{
 
 export type CreateCommentInput = Pick<Comment,
 'postId' | 'parentId' | 'name' | 'text'> & PasswordOnly;
-export type CreateCommentOutput = CommentIdOnly;
+export type CreateCommentOutput = IdOnly;
 
 export type ReadCommentsInput = PostIdOnly;
 export type ReadCommentsOutput = {comments: Comment[]};

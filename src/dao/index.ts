@@ -102,7 +102,7 @@ export default class MyDao implements I.Dao {
       whenCreated: Date.now(),
       whenPublished: Date.now() * 2,
     });
-    return { postId: post.id };
+    return { id: post.id };
   }
 
   private async updatePost(input: I.UpdatePostInput): Promise<I.UpdatePostOutput> {
@@ -208,7 +208,7 @@ export default class MyDao implements I.Dao {
       parentId: input.parentId,
       whenCreated: Date.now(),
     });
-    return { commentId: comment.id };
+    return { id: comment.id };
   }
 
   private async updateComment(input: I.UpdateCommentInput, admin: boolean)
