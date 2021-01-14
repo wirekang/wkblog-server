@@ -1,5 +1,8 @@
 export default {
   log(title:string, data?:string):void {
+    if (process.env.CI) {
+      return;
+    }
     const date = new Date();
     console.log(`${date.toLocaleString(undefined, { hour12: false })}\t${title}\t${data || ''}`);
   },
