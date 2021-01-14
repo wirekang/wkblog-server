@@ -44,7 +44,7 @@ jobs:
             LIMITER_RETRY: ${{ secrets.LIMITER_RETRY }}
             SERVER_PORT: ${{ secrets.SERVER_PORT }}
       - run: npm run build
-      - run: 'echo $DEPLOY_KEY > key'
+      - run: echo "$DEPLOY_KEY" > key'
           env:
             DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       - run: scp -i "key" -P $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_HOST
