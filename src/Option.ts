@@ -22,7 +22,6 @@ function int(i:any): number {
 class Option {
   constructor() {
     if (process.env.CI) {
-      console.log('###################');
       return;
     }
     const result = dotenv.config();
