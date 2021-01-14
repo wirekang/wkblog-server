@@ -41,14 +41,12 @@ jobs:
             LIMITER_RETRY: ${{ secrets.LIMITER_RETRY }}
             SERVER_PORT: ${{ secrets.SERVER_PORT }}
       - run: npm run build
-      - run: echo $DEPLOY_KEY >> key
-      - run: chmod 400 key
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-      - run: scp -i "key" -P $DEPLOY_PORT dist/wkblog.js -o "StrictHostKeyChecking no" $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_TARGET
-        env:
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_TARGET: ${{ secrets.DEPLOY_TARGET }}
+      - uses: appleboy/scp-actions@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "dist/wkblog.js"
+          target: "${{ secrets.DEPLOY_TARGET }}"
         
