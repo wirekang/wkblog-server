@@ -47,7 +47,7 @@ jobs:
       - run: echo $DEPLOY_KEY >> key
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-      - run: scp -i "key" -P $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_HOST dist/wkblog.js DEPLOY_TARGET
+      - run: scp -i "key" -P $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_HOST dist/wkblog.js $DEPLOY_TARGET
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
