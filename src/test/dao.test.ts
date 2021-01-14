@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import MyDao from 'dao';
 import * as I from 'interfaces';
 import { Container } from 'inversify';
@@ -6,8 +7,9 @@ import 'reflect-metadata';
 import { ConverterMock, FilterMock } from 'test/mock';
 import TYPES from 'Types';
 
-const POST_COUNT = 10;
-const MAX_DELAY = 50000;
+const MAX_DELAY = 20000;
+const PAGE_COUNT = 3;
+const PAGE_POST_COUNT = 2;
 
 describe('DB', () => {
   const container = new Container();
@@ -15,67 +17,142 @@ describe('DB', () => {
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);
   container.bind<I.Converter>(TYPES.Converter).to(ConverterMock);
   const dao = container.get<I.Dao>(TYPES.Dao);
+
+  const createPost = (input?: I.CreatePostInput) => (
+    dao.do<I.CreatePost>(I.ActionType.CreatePost, input || {
+      title: 't', description: 'd', markdown: 'm', tagNames: ['t1', 't2'],
+    })
+  );
+
+  const updatePost = (input: I.UpdatePostInput) => (
+    dao.do<I.UpdatePost>(I.ActionType.UpdatePost, input)
+  );
+
+  const readPost = (input: I.ReadPostInput, admin:boolean) => (
+    dao.do<I.ReadPost>(I.ActionType.ReadPost, input, admin)
+  );
+  const readPostMd = (input: I.ReadPostMarkdownInput) => (
+    dao.do<I.ReadPostMarkdown>(I.ActionType.ReadPostMarkdown, input)
+  );
+
+  const readPosts = (input: I.ReadPostsInput, admin:boolean) => (
+    dao.do<I.ReadPosts>(I.ActionType.ReadPosts, input, admin)
+  );
+
+  const deletePost = (input: I.DeletePostInput) => (
+    dao.do<I.DeletePost>(I.ActionType.DeletePost, input)
+  );
+
+  const publishPost = (input: I.PublishPostInput) => (
+    dao.do<I.PublishPost>(I.ActionType.PublishPost, input)
+  );
+
+  const countPosts = (input: I.CountPostsInput, admin: boolean) => (
+    dao.do<I.CountPosts>(I.ActionType.CountPosts, input, admin)
+  );
+
+  const createCmt = (input: Partial<I.CreateCommentInput>, admin:boolean) => (
+    dao.do<I.CreateComment>(I.ActionType.CreateComment, {
+      name: input.name || 'n',
+      parentId: input.parentId || null,
+      password: input.password || 'pw',
+      postId: input.postId || 0,
+      text: input.text || 'te',
+    }, admin)
+  );
+
+  const updateCmt = (input: I.UpdateCommentInput, admin:boolean) => (
+    dao.do<I.UpdateComment>(I.ActionType.UpdateComment, input, admin)
+  );
+
+  const readCmts = (input: I.ReadCommentsInput) => (
+    dao.do<I.ReadComments>(I.ActionType.ReadComments, input)
+  );
+
+  const deleteCmt = (input: I.DeleteCommentInput, admin:boolean) => (
+    dao.do<I.DeleteComment>(I.ActionType.DeleteComment, input, admin)
+  );
+
   dao.init(Option.dao());
   it('접속', async () => {
     await dao.connect();
   });
 
-  const ids = [] as number[];
-  const tagNamess = [] as string[][];
-
-  const tagLength = (i:number) => ((i % 3) + 1);
-  const tagName = (i:number, j:number) => `tag${tagLength(i) + j}`;
-
-  it(`포스트 ${POST_COUNT}개 생성`, async () => {
-    const createRecursive = async (i:number) => {
-      if (i >= 0) {
-        await createRecursive(i - 1);
-        const tagNames = [...new Array(tagLength(i))].map((_, j) => tagName(i, j));
-        const id = await dao.do<I.CreatePost>(I.ActionType.CreatePost, {
-          markdown: 'h',
-          description: 'd',
-          title: `t${i}`,
-          tagNames,
-        });
-        ids.push(id.postId);
-        tagNamess.push(tagNames);
-      }
+  it('포스트 생성, 읽기', async () => {
+    const input:I.CreatePostInput = {
+      description: 'd',
+      markdown: 'm',
+      tagNames: ['tag1', 'tag 2', 't a g 3'],
+      title: 't',
     };
-    await createRecursive(POST_COUNT);
-  });
-
-  it('id,whenCreated,tags 확인', async () => {
-    const which = 0;
-    const id = ids[which];
-    const { post } = await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id }, true);
+    const { id } = await createPost(input);
+    const { post } = await readPost({ id }, true);
     expect(post.id).toBe(id);
+    expect(post.title).toBe(input.title);
+    expect(post.description).toBe(input.description);
+    expect(post.html).toBe(input.markdown);
+    expect(post.tags.map((tag) => tag.name).sort())
+      .toEqual(input.tagNames.sort());
     expect(Date.now() - post.whenCreated)
       .toBeLessThanOrEqual(MAX_DELAY);
-    expect(post.tags.length).toBe(tagLength(which));
-    expect(post.tags.map((tag) => tag.name).sort())
-      .toEqual(tagNamess[which].sort());
+    const { markdown } = await readPostMd({ id });
+    expect(markdown).toBe(input.markdown);
   });
 
-  it('포스트 수정 후 확인', async () => {
-    const id = ids[0];
-    await dao.do<I.UpdatePost>(I.ActionType.UpdatePost, {
+  it('포스트 수정', async () => {
+    const { id } = await createPost();
+    const input:I.UpdatePostInput = {
       id,
-      description: '수정',
-      markdown: '수정',
-      title: 'tnwjd',
-      tagNames: tagNamess[5],
-    });
-    const { post } = await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id }, true);
+      description: 'dd',
+      markdown: 'mm',
+      tagNames: ['tag4', 'tag5', 't6'],
+      title: 'tt',
+    };
+    await updatePost(input);
+    const { post } = await readPost({ id }, true);
     expect(post.id).toBe(id);
+    expect(post.title).toBe(input.title);
+    expect(post.description).toBe(input.description);
+    expect(post.html).toBe(input.markdown);
     expect(Date.now() - post.whenUpdated)
       .toBeLessThanOrEqual(MAX_DELAY);
     expect(post.tags.map((tag) => tag.name).sort())
-      .toEqual(tagNamess[5].sort());
+      .toEqual(input.tagNames?.sort());
+    const { markdown } = await readPostMd({ id });
+    expect(markdown).toBe(input.markdown);
+  });
+
+  it('포스트 일부 수정', async () => {
+    const { id } = await createPost();
+    const postBefore = (await readPost({ id }, true)).post;
+    await updatePost({ id, description: '수정' });
+    const { post } = await readPost({ id }, true);
+    expect(postBefore.id).toBe(id);
+    expect(post.id).toBe(id);
+    expect(post.title).toBe(postBefore.title);
+    expect(post.description).toBe('수정');
+    expect(post.html).toBe(postBefore.html);
+    expect(Date.now() - post.whenUpdated)
+      .toBeLessThanOrEqual(MAX_DELAY);
+    expect(post.tags.sort())
+      .toEqual(postBefore.tags.sort());
+  });
+
+  it('포스트 삭제', async () => {
+    const { id } = await createPost();
+    await deletePost({ id });
+    try {
+      await readPost({ id }, true);
+    } catch {
+      return;
+    }
+    fail();
   });
 
   it('비공개 포스트 접근 확인', async () => {
+    const { id } = await createPost();
     try {
-      await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id: ids[0] }, false);
+      await readPost({ id }, false);
     } catch (e) {
       return;
     }
@@ -83,136 +160,136 @@ describe('DB', () => {
   });
 
   it('포스트 공개 후 접근 확인', async () => {
-    await dao.do<I.PublishPost>(I.ActionType.PublishPost, { id: ids[0], published: true });
-    const { post } = await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id: ids[0] }, false);
+    const { id } = await createPost();
+    await publishPost({ id, published: true });
+    const { post } = await readPost({ id }, false);
     expect(post.published).toBe(true);
     expect(Date.now() - post.whenPublished)
       .toBeLessThanOrEqual(MAX_DELAY);
   });
 
   it('포스트 비공개 후 접근 확인', async () => {
-    await dao.do<I.PublishPost>(I.ActionType.PublishPost, { id: ids[0], published: false });
-    const { post } = await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id: ids[0] }, true);
-    expect(post.published).toBeFalsy();
+    const { id } = await createPost();
+    await publishPost({ id, published: false });
     try {
-      await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id: ids[0] }, false);
-    } catch (e) {
+      await readPost({ id }, false);
+    } catch {
       return;
     }
     fail();
   });
 
-  it('댓글 생성 및 읽기', async () => {
-    const createComment = (
-      parentId: number | null,
-    ) => dao.do<I.CreateComment>(I.ActionType.CreateComment, {
-      name: 'thisiname',
-      text: 'thisistext',
-      password: 'pwd',
-      parentId,
-      postId: ids[0],
-    }, false);
-    const c1 = await createComment(null);
-    const c2 = await createComment(null);
-    const c11 = await createComment(c1.commentId);
-    const c12 = await createComment(c1.commentId);
-    const c121 = await createComment(c12.commentId);
-    const c122 = await createComment(c12.commentId);
+  it('포스트 삭제 후 count 변화 확인', async () => {
+    const { id } = await createPost();
+    const { postsCount: before } = await countPosts({}, true);
+    await deletePost({ id });
+    const { postsCount: after } = await countPosts({}, true);
+    expect(before - after).toBe(1);
+  });
 
-    const { comments } = await dao.do<I.ReadComments>(
-      I.ActionType.ReadComments, { postId: ids[0] },
+  it('포스트 공개 후 count 변화 확인', async () => {
+    const { id } = await createPost();
+    const { postsCount: before } = await countPosts({}, false);
+    const { postsCount: beforeAdmin } = await countPosts({}, true);
+    await publishPost({ id, published: true });
+    const { postsCount: after } = await countPosts({}, false);
+    const { postsCount: afterAdmin } = await countPosts({}, true);
+    expect(after - before).toBe(1);
+    expect(afterAdmin).toBe(beforeAdmin);
+  });
+
+  it('포스트 요약 읽기', async () => {
+    const { postsCount } = await countPosts({}, true);
+    const { postSummaries } = await readPosts({ count: postsCount, offset: 0 }, true);
+    expect(postSummaries.length).toBe(postsCount);
+    const ps = postSummaries[0];
+    const { id } = ps;
+    const { post } = await readPost({ id }, true);
+    expect(post.title).toBe(ps.title);
+    expect(post.description).toBe(ps.description);
+    expect(post.tags.sort()).toEqual(ps.tags.sort());
+    expect(post.whenPublished).toBe(ps.whenPublished);
+    expect(post.comments.length).toBe(ps.commentsCount);
+  });
+
+  it('태그 읽기', async () => {
+    const { tags } = await dao.do<I.ReadTags>(I.ActionType.ReadTags, null);
+    expect(tags).not.toBeUndefined();
+    expect(tags.length).not.toBe(0);
+  });
+
+  it('포스트 태그 필터 및 페이징', async () => {
+    const input = (i:number) => ({
+      title: `title${i}`,
+      description: `des${i}`,
+      markdown: `mark${i}`,
+      tagNames: ['tagforpaging'],
+    });
+    const { id: id0 } = await createPost(input(0));
+    for (let i = 1; i < PAGE_COUNT * PAGE_POST_COUNT; i += 1) {
+      await createPost(input(i));
+    }
+    const { post: post0 } = await readPost({ id: id0 }, true);
+    expect(post0.tags.length).toBe(1);
+    expect(post0.tags[0].name).toBe(input(0).tagNames[0]);
+    const tagId = post0.tags[0].id;
+    const { postSummaries: psAll } = await readPosts(
+      { count: PAGE_COUNT * PAGE_POST_COUNT, offset: 0, tagId }, true,
     );
-    expect(comments.length).toBe(6);
-    expect(comments[0].id).toBe(c1.commentId);
+    expect(psAll.length).toBe(PAGE_COUNT * PAGE_POST_COUNT);
+    const result = [] as I.PostSummary[];
+    for (let i = 0; i < PAGE_COUNT; i += 1) {
+      const { postSummaries: ps } = await readPosts(
+        { count: PAGE_POST_COUNT, offset: PAGE_POST_COUNT * i, tagId }, true,
+      );
+      expect(ps.length).toBe(PAGE_POST_COUNT);
+      result.push(...ps);
+    }
+    expect(psAll).toEqual(result);
+  });
 
-    const { post } = await dao.do<I.ReadPost>(I.ActionType.ReadPost, { id: ids[0] }, true);
+  it('댓글 생성 및 읽기', async () => {
+    const { id: postId } = await createPost();
+    const c0 = await createCmt({ postId }, false);
+    const c0s0 = await createCmt({ postId, parentId: c0.id }, false);
+    const c1 = await createCmt({ postId }, false);
+    const c1s0 = await createCmt({ postId, parentId: c1.id }, false);
+    const c0s1 = await createCmt({ postId, parentId: c0.id }, false);
+    const c1s0s0 = await createCmt({ postId, parentId: c1s0.id }, false);
+
+    const { comments } = await readCmts({ postId });
+    const fnd = (id:number) => {
+      const result = comments.find((c) => c.id === id);
+      if (!result) {
+        fail();
+      }
+      return result;
+    };
+    expect(comments.length).toBe(6);
+    expect(fnd(c0s0.id).parentId).toBe(c0.id);
+    expect(fnd(c0s1.id).parentId).toBe(c0.id);
+    expect(fnd(c1s0.id).parentId).toBe(c1.id);
+    expect(fnd(c1s0s0.id).parentId).toBe(c1s0.id);
+
+    const { post } = await readPost({ id: postId }, true);
     expect(post.comments).toEqual(comments);
   });
 
-  it('포스트 삭제, count 변화 확인', async () => {
-    const before = await dao.do<I.CountPosts>(I.ActionType.CountPosts, {}, true);
-    await dao.do<I.DeletePost>(I.ActionType.DeletePost, { id: ids[1] });
-    const after = await dao.do<I.CountPosts>(I.ActionType.CountPosts, {}, true);
-    expect(before.postsCount - after.postsCount).toBe(1);
-  });
-
-  it('포스트 3개 공개 후 권한없이 count 확인', async () => {
-    await dao.do<I.PublishPost>(I.ActionType.PublishPost, { id: ids[5], published: true });
-    await dao.do<I.PublishPost>(I.ActionType.PublishPost, { id: ids[6], published: true });
-    await dao.do<I.PublishPost>(I.ActionType.PublishPost, { id: ids[7], published: true });
-    const { postsCount } = await dao.do<I.CountPosts>(I.ActionType.CountPosts, {}, false);
-    expect(postsCount).toBe(3);
-  });
-
-  const getPage = (offset:number, count: number, tagId?:number) => dao.do<I.ReadPosts>(
-    I.ActionType.ReadPosts, { offset, count, tagId }, true,
-  );
-  const getPageRecursive = async (
-    arr:I.PostSummary[], offset:number, count:number, max: number, tagId?:number,
-  ) => {
-    if (offset <= max) {
-      const { postSummaries } = await getPage(offset, count, tagId);
-      arr.push(...postSummaries);
-      await getPageRecursive(arr, offset + count, count, max, tagId);
-    }
-  };
-
-  it('필터 없이 페이징', async () => {
-    const PAGE_COUNT = 3;
-    const POST_PER_PAGE = Math.round(POST_COUNT / PAGE_COUNT);
-    const arr = [] as I.PostSummary[];
-    const { postsCount } = await dao.do<I.CountPosts>(I.ActionType.CountPosts, {}, true);
-    await getPageRecursive(arr, 0, POST_PER_PAGE, postsCount);
-    expect(arr.length).toBe(postsCount);
-    expect(arr[0].commentsCount).toBe(6);
-  });
-
-  it('태그 목록 확인', async () => {
-    const { tags } = await dao.do<I.ReadTags>(I.ActionType.ReadTags, null);
-    const tagNames = [] as string[];
-    tagNamess.forEach((tns) => {
-      tagNames.push(...tns);
-    });
-    const uniques = Array.from(new Set(tagNames));
-    expect(tags.map((tag) => tag.name).sort()).toEqual(uniques.sort());
-  });
-
-  it('태그 필터 확인', async () => {
-    const { tags } = await dao.do<I.ReadTags>(I.ActionType.ReadTags, null);
-    const tag = tags[2];
-    const { postsCount } = await dao.do<I.CountPosts>(
-      I.ActionType.CountPosts, { tagId: tag.id }, true,
-    );
-    const { postSummaries } = await getPage(0, postsCount, tag.id);
-    expect(postsCount).toBe(postSummaries.length);
-  });
-
-  let cid = 0;
   it('admin 댓글 생성/확인/강제 삭제', async () => {
-    const undef = undefined as any;
-    const { commentId } = await dao.do<I.CreateComment>(I.ActionType.CreateComment, {
-      name: undef,
-      parentId: null,
-      postId: 3,
-      password: undef,
-      text: 'I am admin',
-    }, true);
-    cid = commentId;
+    const { id: postId } = await createPost();
+    const { id } = await createCmt({ postId }, true);
 
-    const { comments } = await dao.do<I.ReadComments>(
-      I.ActionType.ReadComments, { postId: 3 }, true,
-    );
-    expect(comments.find((cm) => cm.id === cid)?.admin).toBeTruthy();
-    await dao.do<I.DeleteComment>(
-      I.ActionType.DeleteComment, { id: comments[0].id, password: ' ' }, true,
-    );
+    const { comments } = await readCmts({ postId });
+
+    expect(comments.find((cm) => cm.id === id)?.admin).toBeTruthy();
+    await deleteCmt({ id, password: 'wrong password' }, true);
   });
 
   it('비 권한으로 admin 댓글 수정 시도', async () => {
+    const { id: postId } = await createPost();
+    const { id } = await createCmt({ postId }, true);
     try {
-      await dao.do<I.UpdateComment>(
-        I.ActionType.UpdateComment, { id: cid, password: '-', text: 'asdf' }, false,
-      );
+      await updateCmt({ id, password: '-', text: 'asdf' }, false);
     } catch {
       return;
     }
@@ -220,40 +297,14 @@ describe('DB', () => {
   });
 
   it('비 권한으로 admin 댓글 삭제 시도', async () => {
+    const { id: postId } = await createPost();
+    const { id } = await createCmt({ postId }, true);
     try {
-      await dao.do<I.DeleteComment>(I.ActionType.DeleteComment, { id: cid, password: '-' }, false);
+      await deleteCmt({ id, password: '-' }, false);
     } catch {
       return;
     }
     fail();
-  });
-
-  it('마크다운 확인 - 업데이트', async () => {
-    const { postSummaries } = await dao.do<I.ReadPosts>(
-      I.ActionType.ReadPosts, { count: 1, offset: 0 }, true,
-    );
-    const { id } = postSummaries[0];
-    const markdown = 'asdfasdf';
-    await dao.do<I.UpdatePost>(I.ActionType.UpdatePost, { id, markdown });
-
-    const res = await dao.do<I.ReadPostMarkdown>(
-      I.ActionType.ReadPostMarkdown, { id }, true,
-    );
-    expect(res.markdown).toBe(markdown);
-  });
-
-  it('마크다운 확인 - 생성', async () => {
-    const markdown = 'asdfasdf';
-    const { postId } = await dao.do<I.CreatePost>(
-      I.ActionType.CreatePost, {
-        title: 't', description: 'd', tagNames: [], markdown,
-      },
-    );
-
-    const res = await dao.do<I.ReadPostMarkdown>(
-      I.ActionType.ReadPostMarkdown, { id: postId }, true,
-    );
-    expect(res.markdown).toBe(markdown);
   });
 
   it('닫기', async () => {

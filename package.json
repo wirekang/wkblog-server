@@ -57,15 +57,14 @@
     "start": "kill-port 9229 &&NODE_PATH=./src node -r ts-node/register src/index.ts ",
     "debug": "NODE_PATH=./src nodemon --watch src --delay 2 --exec node -r ts-node/register --inspect src/index.ts",
     "build": "NODE_ENV=production npx webpack --mode production",
-    "test": "jest --runInBand ./src/test/",
-    "test:dao": "jest --runInBand ./src/test/dao.test.ts",
-    "test:service": "jest --runInBand ./src/test/service.test.ts",
-    "test:server": "jest --runInBand ./src/test/server.test.ts",
-    "test:auth": "jest --runInBand ./src/test/auth.test.ts",
-    "test:filter": "jest --runInBand ./src/test/filter.test.ts",
-    "test:limiter": "jest --runInBand ./src/test/limiter.test.ts",
-    "test:option": "jest --runInBand ./src/test/option.test.ts",
-    "test:index": "jest --runInBand ./src/test/index.test.ts"
+    "test": "jest ./src/test/",
+    "test:dao": "jest ./src/test/dao.test.ts",
+    "test:service": "jest ./src/test/service.test.ts",
+    "test:server": "jest ./src/test/server.test.ts",
+    "test:auth": "jest ./src/test/auth.test.ts",
+    "test:filter": "jest ./src/test/filter.test.ts",
+    "test:limiter": "jest ./src/test/limiter.test.ts",
+    "test:option": "jest ./src/test/option.test.ts"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
