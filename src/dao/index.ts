@@ -114,6 +114,7 @@ export default class MyDao implements I.Dao {
     pm.id = input.id;
     pm.tags = input.tagNames && await this.validateTags(input.tagNames);
     pm.markdown = input.markdown;
+    pm.html = input.markdown ? this.converter.toHtml(input.markdown) : undefined;
     pm.description = input.description;
     pm.title = input.title;
     pm.whenUpdated = Date.now();
