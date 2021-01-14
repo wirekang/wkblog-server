@@ -42,6 +42,7 @@ jobs:
             SERVER_PORT: ${{ secrets.SERVER_PORT }}
       - run: npm run build
       - run: echo $DEPLOY_KEY >> key
+      - run: chmod 400 key
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
       - run: scp -i "key" -P $DEPLOY_PORT dist/wkblog.js $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_TARGET
