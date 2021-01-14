@@ -45,7 +45,7 @@ jobs:
       - run: chmod 400 key
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-      - run: scp -i "key" -P $DEPLOY_PORT dist/wkblog.js $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_TARGET
+      - run: scp -i "key" -P $DEPLOY_PORT dist/wkblog.js -o "StrictHostKeyChecking no" $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_TARGET
         env:
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
