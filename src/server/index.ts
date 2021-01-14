@@ -50,7 +50,7 @@ export default class MyServer implements I.Server {
 
   async open():Promise<void> {
     return new Promise((resolve) => {
-      this.server = this.app.listen(this.option.port, () => {
+      this.server = this.app.listen(this.option.port, '0.0.0.0', () => {
         utils.log('ServerOpen');
         resolve();
       });
