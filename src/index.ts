@@ -19,8 +19,8 @@ import TYPES from 'Types';
 
   auth.init(Option.auth());
   limiter.init(Option.limiter());
-  await dao.init(Option.dao());
-  await server.init(Option.server());
+  dao.init(Option.dao());
+  server.init(Option.server());
   await dao.connect();
   await server.open();
 })();
