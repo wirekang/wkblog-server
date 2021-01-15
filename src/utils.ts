@@ -4,7 +4,7 @@ export default {
       return;
     }
     const date = new Date();
-    console.log(`${date.toLocaleString(undefined, { hour12: false })}\t${title}\t${data || ''}`);
+    console.log(`${date.toLocaleString(undefined, { hour12: false })}  ${title}\t${data || ''}`);
   },
   repeat(fn: ()=>void, time: number):void {
     [...new Array(time)].forEach(() => { fn(); });
