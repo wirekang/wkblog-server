@@ -31,14 +31,13 @@ export default class MyServer implements I.Server {
     this.app = new Koa();
     this.app.use(helmet());
     this.app.use(async (ctx, next) => {
-      const header = ctx.get('X-Forwarded-For');
       const forward = ctx.get('X-Forwarded-For').split(',')[0].trim();
       ctx.state.ip = forward || ctx.ip;
       try {
         this.limiter.validate(ctx.state.ip);
         await next();
       } catch {
-        utils.log('IpBlock', `ip: ${ctx.state.ip} header: ${header}`);
+        utils.log('IpBlock', `ip: ${ctx.state.ip}`);
         ctx.status = 429;
       }
     });
