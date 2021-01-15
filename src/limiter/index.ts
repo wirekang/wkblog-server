@@ -1,5 +1,6 @@
 import { Limiter, LimiterOption } from 'interfaces';
 import { injectable } from 'inversify';
+import utils from 'utils';
 
 @injectable()
 export default class MyLimiter implements Limiter {
@@ -17,6 +18,7 @@ export default class MyLimiter implements Limiter {
 
   validate(ip: string): void {
     if (this.blockMap.get(ip)) {
+      utils.log('LimiterBlock', ip);
       throw Error();
     }
 

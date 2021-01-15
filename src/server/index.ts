@@ -36,7 +36,6 @@ export default class MyServer implements I.Server {
       try {
         this.limiter.validate(ctx.state.ip);
       } catch {
-        utils.log('IpBlock', `ip: ${ctx.state.ip}`);
         ctx.status = 429;
       }
       await next();
