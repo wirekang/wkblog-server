@@ -35,11 +35,11 @@ export default class MyServer implements I.Server {
       ctx.state.ip = forward || ctx.ip;
       try {
         this.limiter.validate(ctx.state.ip);
-        await next();
       } catch {
         utils.log('IpBlock', `ip: ${ctx.state.ip}`);
         ctx.status = 429;
       }
+      await next();
     });
     this.app.use(json({ pretty: false }));
     this.app.use(this.router.allowedMethods());
