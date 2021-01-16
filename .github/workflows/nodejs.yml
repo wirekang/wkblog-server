@@ -55,7 +55,7 @@ jobs:
       - name: Deploy
         working-directory: ./dist
         run: |
-          echo -e $KEY > "key"
+          echo -e "$KEY" > "key"
           chmod 600 "key"
           scp -o StrictHostKeyChecking=no -i "key" -P $PORT $SOURCE $USER@$HOST:$TARGET
         env:
