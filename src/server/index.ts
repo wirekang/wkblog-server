@@ -58,10 +58,10 @@ export default class MyServer implements I.Server {
   async close():Promise<void> {
     return new Promise((r) => {
       if (!this.server) {
-        utils.log('ServerClose');
         throw new Error();
       }
-      this.server.close(() => { r(); });
+
+      this.server.close(() => { utils.log('ServerClose'); r(); });
     });
   }
 
