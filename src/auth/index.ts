@@ -50,10 +50,8 @@ export default class MyAuth implements Auth {
   isLogin(hash: string): boolean {
     try {
       this.validate(hash);
-      utils.log('AuthSuccess');
       return true;
     } catch (e) {
-      utils.log('AuthFail');
       return false;
     }
   }
