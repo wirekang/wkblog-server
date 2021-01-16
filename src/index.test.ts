@@ -60,6 +60,13 @@ describe('프로그램 작동 테스트', () => {
     expect(res.post.title).toBe('t');
   });
 
+  it('태그 읽기', async () => {
+    const res = await ff({
+      action: 'ReadTags',
+    });
+    expect(res.tags[0].name).toBe('tag1');
+  });
+
   it('종료', async () => {
     await server.close();
     await dao.close();
