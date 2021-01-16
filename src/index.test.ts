@@ -47,6 +47,16 @@ describe('프로그램 작동 테스트', () => {
     id = res.id;
   });
 
+  it('댓글 작성', async () => {
+    const input:I.CreateCommentInput = {
+      name: 'n', postId: id, text: 't', password: 'p',
+    };
+    const res = await ff({
+      action: 'CreateComment',
+      input,
+    });
+  });
+
   it('글 읽기', async () => {
     const input:I.ReadPostInput = {
       id,

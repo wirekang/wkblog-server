@@ -54,7 +54,7 @@ describe('DB', () => {
   const createCmt = (input: Partial<I.CreateCommentInput>, admin:boolean) => (
     dao.do<I.CreateComment>(I.ActionType.CreateComment, {
       name: input.name || 'n',
-      parentId: input.parentId || null,
+      parentId: input.parentId,
       password: input.password || 'pw',
       postId: input.postId || 0,
       text: input.text || 'te',
