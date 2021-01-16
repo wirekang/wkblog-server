@@ -38,7 +38,7 @@ export default class CommentModel implements Comment {
   post!: PostModel;
 
   @Column({ nullable: true })
-  parentId!: number | null;
+  parentId: number | undefined;
 
   @ManyToOne(() => CommentModel, (cm) => cm.children,
     { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })

@@ -51,7 +51,7 @@ export type CountPostsOutput = {postsCount: number};
 export interface Comment{
   id: number
   postId: Post['id']
-  parentId: Comment['id'] | null
+  parentId?: Comment['id'] | undefined
   admin: boolean
   name: string
   text: string
