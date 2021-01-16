@@ -133,6 +133,17 @@ export default class MyDao implements I.Dao {
 
   private selectPostTag(admin:boolean, tagId?: number) {
     return this.postRepo.createQueryBuilder('post')
+      .select(
+        [
+          'post.id',
+          'post.title',
+          'post.description',
+          'post.whenUpdated',
+          'post.whenCreated',
+          'post.whenPublished',
+          'post.published',
+          'post.html'],
+      )
       .leftJoinAndSelect('post.tags', 'tag')
       .where(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
       .andWhere(admin ? 'true' : 'post.published = 1');
