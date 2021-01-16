@@ -14,6 +14,6 @@ export default class MyFilter implements Filter {
   }
 
   commentName(str: string): string {
-    return this.html(str).replaceAll('wirekang', '');
+    return this.html(str).replace(/wirekang/g, '');
   }
 }
