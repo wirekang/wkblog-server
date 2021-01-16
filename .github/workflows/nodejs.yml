@@ -53,11 +53,11 @@ jobs:
         run: npm run build
       
       - name: Deploy
+        working-directory: ./dist
         run: |
-            echo -e $KEY >__TEMP_KEY
-            chmod 600 __TEMP_KEY
-            scp -o StrictHostKeyChecking=no -i __TEMP_KEY -P $PORT $SOURCE $USER@$HOST:$TARGET
-          working-directory: ./dist
+          echo -e $KEY >__TEMP_KEY
+          chmod 600 __TEMP_KEY
+          scp -o StrictHostKeyChecking=no -i __TEMP_KEY -P $PORT $SOURCE $USER@$HOST:$TARGET
         env:
           HOST: ${{ secrets.DEPLOY_HOST }}
           USER: ${{ secrets.DEPLOY_USER }}
