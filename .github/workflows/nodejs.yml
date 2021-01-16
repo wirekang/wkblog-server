@@ -55,9 +55,9 @@ jobs:
       - name: Deploy
         working-directory: ./dist
         run: |
-          echo -e $KEY >__TEMP_KEY
-          chmod 600 __TEMP_KEY
-          scp -o StrictHostKeyChecking=no -i __TEMP_KEY -P $PORT $SOURCE $USER@$HOST:$TARGET
+          echo -e $KEY > "key"
+          chmod 600 "key"
+          scp -o StrictHostKeyChecking=no -i "key" -P $PORT $SOURCE $USER@$HOST:$TARGET
         env:
           HOST: ${{ secrets.DEPLOY_HOST }}
           USER: ${{ secrets.DEPLOY_USER }}
