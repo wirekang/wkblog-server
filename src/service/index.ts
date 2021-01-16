@@ -47,7 +47,7 @@ export default class MyService implements I.Service {
         return null;
       }
       default: {
-        return this.dao.do(type, input, this.auth.isLogin(hash));
+        return this.dao.do(type, input, hash ? this.auth.isLogin(hash) : false);
       }
     }
   }
