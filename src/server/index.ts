@@ -77,7 +77,8 @@ export default class MyServer implements I.Server {
         const result = await this.service.do(action, body.input, body.hash);
         ctx.status = 200;
         ctx.body = result;
-      } catch {
+      } catch (e) {
+        console.log(e);
         ctx.status = 400;
         ctx.body = {};
       }
