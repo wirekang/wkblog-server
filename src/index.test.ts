@@ -34,27 +34,30 @@ describe('프로그램 작동 테스트', () => {
     });
     hash = res.hash;
   });
-
-  it('글 작성,읽기', async () => {
-    const inCp:I.CreatePostInput = {
+  let id = 0;
+  it('글 작성', async () => {
+    const input:I.CreatePostInput = {
       title: 't', description: 'd', markdown: '**hi**', tagNames: ['tag1'],
     };
-    const resCp = await ff({
+    const res = await ff({
       action: 'CreatePost',
-      input: inCp,
+      input,
       hash,
     });
-    const { id } = resCp;
-    const inRp:I.ReadPostInput = {
+    id = res.id;
+  });
+
+  it('글 읽기', async () => {
+    const input:I.ReadPostInput = {
       id,
     };
-    const resRp = await ff({
+    const res = await ff({
       action: 'ReadPost',
-      input: inRp,
+      input,
       hash,
     });
-    expect(resRp.post.id).toBe(id);
-    expect(resRp.post.title).toBe(inCp.title);
+    expect(res.post.id).toBe(id);
+    expect(res.post.title).toBe('t');
   });
 
   it('종료', async () => {
