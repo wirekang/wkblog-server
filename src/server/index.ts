@@ -68,7 +68,6 @@ export default class MyServer implements I.Server {
   private setRoutes():void {
     this.router.post('/api', async (ctx) => {
       try {
-        console.log(ctx.header);
         const body = ctx.request.body as Body;
         const action = I.ActionType[body.action];
         if (action === undefined) {
