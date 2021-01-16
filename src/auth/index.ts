@@ -24,7 +24,7 @@ export default class MyAuth implements Auth {
     if (this.option.hash === this.makeHash(id + pw)) {
       this.when = Date.now();
       this.hash = this.makeHash(this.option.hash + this.when.toString(10));
-      utils.log('AuthLogin', `id:${id}`);
+      utils.log('AuthLogin');
       return this.hash;
     }
     throw Error();
