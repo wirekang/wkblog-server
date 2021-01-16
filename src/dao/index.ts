@@ -177,14 +177,26 @@ export default class MyDao implements I.Dao {
 
   private async readPosts(input:I.ReadPostsInput, admin: boolean)
   : Promise<I.ReadPostsOutput> {
-    const pms = await this.selectPostTag(admin, input.tagId)
+    const { tagId } = input;
+    const pms = await this.postRepo.createQueryBuilder('post')
+      .select(
+        [
+          'post.id',
+          'post.title',
+          'post.description',
+          'post.whenPublished',
+        ],
+      )
+      .leftJoinAndSelect('post.tags', 'tag')
+      .where(tagId ? 'tag.id = :tagId' : 'true', tagId ? { tagId } : {})
+      .andWhere(admin ? 'true' : 'post.published = 1')
       .skip(input.offset)
       .take(input.count)
       .getMany();
 
     const raws = await this.commentRepo.createQueryBuilder('cmt')
       .select('cmt.postId')
-      .addSelect('count(*)', 'count')
+      .addSelect('count(cmt.postId)', 'count')
       .groupBy('cmt.postId')
       .getRawMany();
     const postSummaries = await pms.map((pm) => ({
