@@ -13,6 +13,7 @@ const ff = async (body: any) => {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
     });
+  expect(res.status).toBe(200);
   return res.json();
 };
 
