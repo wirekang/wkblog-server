@@ -51,7 +51,6 @@ describe('프로그램 작동 테스트', () => {
     const input:I.ReadPostInput = {
       id,
     };
-    console.log(id);
     const res = await ff({
       action: 'ReadPost',
       input,
