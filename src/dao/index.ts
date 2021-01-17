@@ -102,8 +102,17 @@ export default class MyDao implements I.Dao {
 
   private async readInfo(input:I.ReadInfoInput): Promise<I.ReadInfoOutput> {
     const res = await this.infoRepo.findOneOrFail(0, { relations: ['links'] });
+    const info:I.Info = {
+      title: res.title,
+      description: res.description,
+      href: res.href,
+      links: res.links.map((link) => ({
+        href: link.href,
+        name: link.name,
+      })),
+    };
     return {
-      info: res,
+      info,
     };
   }
 
