@@ -19,5 +19,5 @@ export default class InfoModel implements I.Info {
   href!: string;
 
   @OneToMany(() => LinkModel, (lm) => lm.info)
-  links!: I.Link[];
+  links!: LinkModel[];
 }
