@@ -1,4 +1,6 @@
-import { CommentModel, PostModel, TagModel } from 'dao/models';
+import {
+  CommentModel, InfoModel, LinkModel, PostModel, TagModel,
+} from 'dao/models';
 import * as I from 'interfaces';
 import { inject, injectable } from 'inversify';
 import {
@@ -21,6 +23,10 @@ export default class MyDao implements I.Dao {
 
   private commentRepo!:Repository<CommentModel>;
 
+  private infoRepo!: Repository<InfoModel>;
+
+  private linkRepo!: Repository<LinkModel>;
+
   private doMap!: Map<I.ActionType, any>;
 
   private option!:I.DaoOption;
@@ -40,6 +46,8 @@ export default class MyDao implements I.Dao {
     this.doMap.set(I.ActionType.ReadComments, this.readComments.bind(this));
     this.doMap.set(I.ActionType.DeleteComment, this.deleteComment.bind(this));
     this.doMap.set(I.ActionType.ReadTags, this.readTags.bind(this));
+    this.doMap.set(I.ActionType.UpdateInfo, this.updateInfo.bind(this));
+    this.doMap.set(I.ActionType.ReadInfo, this.readInfo.bind(this));
     this.option = option;
   }
 
@@ -51,13 +59,15 @@ export default class MyDao implements I.Dao {
     await createConnection({
       type: 'mariadb',
       ...this.option,
-      entities: [PostModel, TagModel, CommentModel],
+      entities: [PostModel, TagModel, CommentModel, InfoModel, LinkModel],
     });
     this.connection = getConnection();
     await this.connection.synchronize(this.option.username === 'blog_test');
     this.postRepo = this.connection.getRepository(PostModel);
     this.tagRepo = this.connection.getRepository(TagModel);
     this.commentRepo = this.connection.getRepository(CommentModel);
+    this.infoRepo = this.connection.getRepository(InfoModel);
+    this.linkRepo = this.connection.getRepository(LinkModel);
     utils.log('DBConnect');
   }
 
@@ -70,6 +80,31 @@ export default class MyDao implements I.Dao {
     type: A['type'], input: A['input'], admin: boolean,
   ): Promise<A['output']> {
     return this.getDo(type)(input, admin);
+  }
+
+  private async updateInfo(input:I.UpdateInfoInput): Promise<I.UpdateInfoOutput> {
+    await this.infoRepo.save({
+      id: 0,
+      description: input.description,
+      href: input.href,
+      title: input.title,
+    });
+    const ps = [] as Promise<LinkModel>[];
+    input.links.forEach((link) => {
+      ps.push(this.linkRepo.save({
+        infoId: 0,
+        href: link.href,
+        name: link.name,
+      }));
+    });
+    await Promise.all(ps);
+  }
+
+  private async readInfo(input:I.ReadInfoInput): Promise<I.ReadInfoOutput> {
+    const res = await this.infoRepo.findOneOrFail(0, { relations: ['links'] });
+    return {
+      info: res,
+    };
   }
 
   private async validateTags(tagNames: string[]):Promise<TagModel[]> {
@@ -119,7 +154,6 @@ export default class MyDao implements I.Dao {
     pm.title = input.title;
     pm.whenUpdated = Date.now();
     await this.postRepo.save(pm);
-    return null;
   }
 
   private async publishPost(input: I.PublishPostInput): Promise<I.PublishPostOutput> {
@@ -128,7 +162,6 @@ export default class MyDao implements I.Dao {
       published: input.published,
       whenPublished: Date.now() * (input.published ? 1 : 2),
     });
-    return null;
   }
 
   private selectPostTag(admin:boolean, tagId?: number) {
@@ -218,7 +251,6 @@ export default class MyDao implements I.Dao {
       throw Error();
     }
     await this.postRepo.remove(post);
-    return null;
   }
 
   private async createComment(input: I.CreateCommentInput, admin: boolean)
@@ -255,7 +287,6 @@ export default class MyDao implements I.Dao {
       updated: true,
       whenUpdated: Date.now(),
     });
-    return null;
   }
 
   private async readComments(input:I.ReadCommentsInput): Promise<I.ReadCommentsOutput> {
@@ -279,7 +310,6 @@ export default class MyDao implements I.Dao {
       throw Error();
     }
     await this.commentRepo.remove(cm);
-    return null;
   }
 
   private async readTags(input:I.ReadTagsInput): Promise<I.ReadTagsOutput> {

@@ -17,6 +17,7 @@ export default class MyService implements I.Service {
 
   constructor() {
     this.permMap = new Map();
+    this.permMap.set(I.ActionType.UpdateInfo, Permission.Admin);
     this.permMap.set(I.ActionType.CreatePost, Permission.Admin);
     this.permMap.set(I.ActionType.ReadPostMarkdown, Permission.Admin);
     this.permMap.set(I.ActionType.UpdatePost, Permission.Admin);

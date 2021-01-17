@@ -307,6 +307,21 @@ describe('DB', () => {
     fail();
   });
 
+  it('정보 수정', async () => {
+    const input = {
+      title: 't',
+      description: 'd',
+      href: 'https://0',
+      links: [{ name: 'l1', href: 'https://1' }, { name: 'l2', href: 'https://2' }],
+    };
+    await dao.do<I.UpdateInfo>(I.ActionType.UpdateInfo, input);
+    const { info } = await dao.do<I.ReadInfo>(I.ActionType.ReadInfo, undefined);
+    expect(info.href).toBe(input.href);
+    expect(info.title).toBe(input.title);
+    expect(info.description).toBe(input.description);
+    expect(info.links.map((l) => ({ href: l.href, name: l.name }))).toEqual(input.links);
+  });
+
   it('닫기', async () => {
     await dao.close();
   });

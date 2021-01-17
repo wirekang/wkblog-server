@@ -87,6 +87,24 @@ export type LoginOutput = {hash: string};
 export type LogoutInput = Nothing;
 export type LogoutOutput = Nothing;
 
+export interface Info{
+  title: string
+  description: string
+  href: string
+  links: Link[]
+}
+
+export interface Link{
+  name: string
+  href: string
+}
+
+export type UpdateInfoInput = Info;
+export type UpdateInfoOutput = Nothing;
+
+export type ReadInfoInput = Nothing;
+export type ReadInfoOutput = {info: Info};
+
 export enum ActionType{
   CreatePost,
   ReadPost,
@@ -103,6 +121,8 @@ export enum ActionType{
   ReadTags,
   Login,
   Logout,
+  UpdateInfo,
+  ReadInfo,
 }
 
 export type Action<type extends ActionType, I, O> = {
@@ -140,6 +160,10 @@ export type Login = Action<ActionType.Login,
  LoginInput, LoginOutput>;
 export type Logout = Action<ActionType.Logout,
  LogoutInput, LogoutOutput>;
+export type UpdateInfo = Action<ActionType.UpdateInfo,
+ UpdateInfoInput, UpdateInfoOutput>;
+export type ReadInfo = Action<ActionType.ReadInfo,
+ ReadInfoInput, ReadInfoOutput>;
 
 export interface Service{
   do<A extends Action<ActionType, unknown, unknown>>(
