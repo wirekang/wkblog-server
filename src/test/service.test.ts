@@ -39,7 +39,7 @@ describe('서비스', () => {
 
   it('잘못된 로그아웃 시도', async () => {
     try {
-      await service.do<I.Logout>(I.ActionType.Logout, null, ' ');
+      await service.do<I.Logout>(I.ActionType.Logout, undefined, ' ');
     } catch {
       return;
     }

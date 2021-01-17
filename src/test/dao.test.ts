@@ -213,7 +213,7 @@ describe('DB', () => {
   });
 
   it('태그 읽기', async () => {
-    const { tags } = await dao.do<I.ReadTags>(I.ActionType.ReadTags, null);
+    const { tags } = await dao.do<I.ReadTags>(I.ActionType.ReadTags, undefined);
     expect(tags).not.toBeUndefined();
     expect(tags.length).not.toBe(0);
   });

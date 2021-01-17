@@ -3,7 +3,7 @@ type PostIdOnly = {postId: number};
 type TagIdOnly = {tagId?: number};
 type CommentIdOnly = {commentId: number};
 type PasswordOnly = {password: string};
-type Nothing = Record<string, never> | undefined | null;
+type Nothing = Record<string, never> | undefined | void;
 
 export interface Post{
   id: number
