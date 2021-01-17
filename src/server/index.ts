@@ -31,6 +31,10 @@ export default class MyServer implements I.Server {
     this.app = new Koa();
     this.app.use(helmet());
     this.app.use(async (ctx, next) => {
+      ctx.response.set({
+        'Access-Control-Allow-Origin': 'http://127.0.0.1:8080',
+        'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+      });
       const forward = ctx.get('X-Forwarded-For').split(',')[0].trim();
       ctx.state.ip = forward || ctx.ip;
       try {
