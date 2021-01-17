@@ -12,6 +12,7 @@ const PAGE_COUNT = 3;
 const PAGE_POST_COUNT = 2;
 
 describe('DB', () => {
+  process.env.DROP_DB = 'true';
   const container = new Container();
   container.bind<I.Dao>(TYPES.Dao).to(MyDao);
   container.bind<I.Filter>(TYPES.Filter).to(FilterMock);

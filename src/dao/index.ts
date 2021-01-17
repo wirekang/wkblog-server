@@ -65,7 +65,7 @@ export default class MyDao implements I.Dao {
       entities: [PostModel, TagModel, CommentModel, InfoModel, LinkModel],
     });
     this.connection = getConnection();
-    await this.connection.synchronize(this.option.username === 'blog_test');
+    await this.connection.synchronize(process.env.DROP_DB === 'true');
     this.postRepo = this.connection.getRepository(PostModel);
     this.tagRepo = this.connection.getRepository(TagModel);
     this.commentRepo = this.connection.getRepository(CommentModel);
