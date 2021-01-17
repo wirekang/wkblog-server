@@ -8,6 +8,9 @@ import {
 } from 'typeorm';
 import TYPES from 'Types';
 import utils from 'utils';
+import {
+  toComment, toInfo, toPost, toTag,
+} from 'dao/convert';
 
 @injectable()
 export default class MyDao implements I.Dao {
@@ -101,18 +104,10 @@ export default class MyDao implements I.Dao {
   }
 
   private async readInfo(input:I.ReadInfoInput): Promise<I.ReadInfoOutput> {
-    const res = await this.infoRepo.findOneOrFail(0, { relations: ['links'] });
-    const info:I.Info = {
-      title: res.title,
-      description: res.description,
-      href: res.href,
-      links: res.links.map((link) => ({
-        href: link.href,
-        name: link.name,
-      })),
-    };
+    const im = await this.infoRepo.findOneOrFail(0, { relations: ['links'] });
+
     return {
-      info,
+      info: toInfo(im),
     };
   }
 
@@ -193,11 +188,11 @@ export default class MyDao implements I.Dao {
 
   private async readPost(input:I.ReadPostInput, admin: boolean)
   : Promise<I.ReadPostOutput> {
-    const post = await this.selectPostTag(admin)
+    const pm = await this.selectPostTag(admin)
       .andWhere('post.id = :id', { id: input.id })
       .leftJoinAndSelect('post.comments', 'comment')
       .getOneOrFail();
-    return { post };
+    return { post: toPost(pm) };
   }
 
   private async readPostMarkdown(input: I.ReadPostMarkdownInput)
@@ -245,7 +240,7 @@ export default class MyDao implements I.Dao {
       id: pm.id,
       title: pm.title,
       description: pm.description,
-      tags: pm.tags,
+      tags: pm.tags.map((t) => toTag(t)),
       whenPublished: pm.whenPublished,
       commentsCount: Number(raws.find(
         (raw) => raw.cmt_postId === pm.id,
@@ -299,10 +294,10 @@ export default class MyDao implements I.Dao {
   }
 
   private async readComments(input:I.ReadCommentsInput): Promise<I.ReadCommentsOutput> {
-    const comments = await this.commentRepo.find(
+    const cms = await this.commentRepo.find(
       { where: { postId: input.postId }, order: { whenCreated: 'ASC' } },
     );
-    return { comments };
+    return { comments: cms.map((cm) => toComment(cm)) };
   }
 
   private async deleteComment(input:I.DeleteCommentInput, admin: boolean)
@@ -322,7 +317,7 @@ export default class MyDao implements I.Dao {
   }
 
   private async readTags(input:I.ReadTagsInput): Promise<I.ReadTagsOutput> {
-    const tags = await this.tagRepo.find();
-    return { tags };
+    const tms = await this.tagRepo.find();
+    return { tags: tms.map((tm) => toTag(tm)) };
   }
 }
